@@ -1,0 +1,131 @@
+version: '3.8'
+networks:
+    app-network:
+        driver: bridge
+services:
+    nginx:
+        image: nginx:latest
+        volumes:
+            - ./:/var/www
+            - ./_docker/nginx/conf.d/:/etc/nginx/conf.d
+            - ./_docker/nginx/ssl:/etc/nginx/ssl
+        ports:
+            - "443:443"
+        depends_on:
+            - app
+        container_name: project_nginx
+        networks:
+            - app-network
+
+    app:
+        build:
+            context: .
+            dockerfile: _docker/app/Dockerfile
+        user: "${UID:-1000}:${GID:-1000}"
+        volumes:
+            - ./:/var/www
+            - ./storage/app/public:/var/www/storage/app/public
+        depends_on:
+            - pgsql
+            - minio
+            - redis
+            - mongodb
+            - elasticsearch
+        container_name: project_app
+        environment:
+            - APP_ENV=dev
+        ports:
+            - "5173:5173"
+        networks:
+            - app-network
+
+    pgsql:
+        image: postgres:latest
+        restart: always
+        volumes:
+            - ./tmp/db:/var/lib/postgresql/data
+        environment:
+            POSTGRES_DB: project_dev
+            POSTGRES_USER: root
+            POSTGRES_PASSWORD: root
+        ports:
+            - "5432:5432"
+        container_name: project_db
+        networks:
+            - app-network
+
+    pgadmin:
+        image: dpage/pgadmin4:8.6
+        container_name: project_pgadmin
+        environment:
+            PGADMIN_DEFAULT_EMAIL: admin@example.com
+            PGADMIN_DEFAULT_PASSWORD: admin
+        ports:
+            - "5050:80"
+        depends_on:
+            - pgsql
+        restart: unless-stopped
+        networks:
+            - app-network
+
+    redis:
+        image: redis:latest
+        restart: always
+        ports:
+            - "6379:6379"
+        volumes:
+            - ./tmp/redis:/data
+        container_name: project_redis
+        networks:
+            - app-network
+
+    minio:
+        image: minio/minio:latest
+        container_name: minio
+        ports:
+            - "9000:9000"
+            - "9001:9001"
+        environment:
+            MINIO_ROOT_USER: minioadmin
+            MINIO_ROOT_PASSWORD: minioadmin
+        volumes:
+            - ./tmp/minio:/data
+        command: server /data --console-address ":9001"
+        restart: always
+        networks:
+            - app-network
+    mongodb:
+        image: mongo:7
+        container_name: mongodb
+        restart: unless-stopped
+        ports:
+            - 27017:27017
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: root
+            MONGO_INITDB_ROOT_PASSWORD: root
+        volumes:
+            - ./tmp/mongo:/data/db
+        networks:
+            - app-network
+
+    elasticsearch:
+      image: elasticsearch:8.12.0
+      environment:
+            - discovery.type=single-node
+            - xpack.security.enabled=false
+            - ES_JAVA_OPTS=-Xms1g -Xmx1g
+            - bootstrap.memory_lock=true
+            - network.host=0.0.0.0
+            - http.host=0.0.0.0
+      ports:
+          - "9200:9200"
+      volumes:
+          - ./tmp/elasticsearch:/usr/share/elasticsearch/data
+      ulimits:
+          memlock:
+            soft: -1
+            hard: -1
+      networks:
+          - app-network
+
+

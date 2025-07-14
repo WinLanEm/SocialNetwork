@@ -1,0 +1,31 @@
+# Исключаем папку с локальными node-модулями (чтобы не копировать их из хоста)
+node_modules
+
+# Логи npm
+npm-debug.log
+yarn-error.log
+
+# Системные и временные файлы
+.DS_Store
+*.log
+*.tmp
+tmp/*
+
+# Конфигурации IDE и редакторов (если есть)
+.vscode
+.idea
+
+# Файлы сборки и кэш
+dist
+build
+.cache
+
+# Git папка
+.git
+.gitignore
+
+# Другие временные или ненужные файлы
+*.env.local
+.env.development.local
+.env.test.local
+.env.production.local
