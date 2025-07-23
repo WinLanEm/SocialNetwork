@@ -3,25 +3,18 @@
 namespace App\Presentation\Message\Controllers;
 
 use App\Application\Message\DTOs\StoreMessageDTO;
-use App\Application\Message\Jobs\StoreStringMessageJob;
+use App\Application\Message\Jobs\StoreMessageJob;
 use App\Common\Controllers\Controller;
-use App\Domain\Message\Actions\ChoiceStoreMessageStrategyInterface;
 use App\Presentation\Message\Requests\StoreMessageRequest;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class StoreMessageController extends Controller
 {
-    public function __invoke(StoreMessageRequest $request,ChoiceStoreMessageStrategyInterface $choiceStoreMessageStrategy)
+    public function __invoke(StoreMessageRequest $request)
     {
-        $dto = StoreMessageDTO::fromRequest($request->toArray());
-        $userId = Auth::user()->id;
-        $res = $choiceStoreMessageStrategy->exec($dto,$userId);
-        if($res){
-            return response()->noContent(204);
-        }else{
-            return response()->json([
-                'SendMessageError' => 'Message type not found'
-            ])->status(500);
-        }
+        $dto = StoreMessageDTO::fromRequest($request->validated());
+        $userId = auth()->id();
+        StoreMessageJob::dispatch($dto, $userId);
+        return response()->noContent(201);
     }
 }

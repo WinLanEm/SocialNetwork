@@ -116,11 +116,6 @@
     text-align: center;
     align-items: center;
 }
-.members:not(.members-active) {
-    opacity: 0.8;
-    max-height: 0;
-    overflow: hidden;
-}
 .concrete-chat-wrapper{
     background: #0e1621;
     height:100vh;
@@ -158,9 +153,22 @@
     position: absolute;
     right: 2%;
 }
-.messages-container{
+.messages-container {
     width: 100%;
     height: 87%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+.messages{
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 20px;
+    padding-right: 20px;
+    padding-left: 20px;
+    padding-top: 5px;
 }
 
 .message-write-input{
@@ -274,3 +282,161 @@
     padding: 0;
 }
 
+.receiver-message-container {
+    display: inline-flex;
+    align-self: flex-start; /* Выравнивание по левому краю */
+    max-width: 80%;
+    padding: 8px 12px;
+    border-radius: 12px;
+    background-color: #1a2433;
+    color: white;
+    word-wrap: break-word;
+    text-align: left;
+    animation: fadeIn 0.2s ease-out forwards;
+}
+
+.sender-message-container {
+    display: flex;
+    align-self: flex-end; /* Выравнивание по правому краю */
+    max-width: 80%;
+    padding: 8px 12px;
+    border-radius: 12px;
+    background-color: #253143; /* Другой цвет для получателя */
+    color: white;
+    word-wrap: break-word;
+    text-align: right;
+    animation: fadeIn 0.2s ease-out forwards;
+}
+.message-content-wrapper {
+    position: relative;
+    padding-right: 3rem;
+}
+.blue-circle {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #4da6ff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.2s ease-out forwards;
+}
+.other-message-info-wrapper{
+    display: flex;
+    padding-left: 15px;
+    animation: fadeIn 0.2s ease-out forwards;
+}
+.message-content {
+    margin: 0;
+    word-wrap: break-word;
+    text-align: left;
+}
+
+.other-message-info-wrapper {
+    position: absolute;
+    right: 0px;
+    bottom: -4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.message-data {
+    margin: 0;
+    font-size: 0.7em;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.blue-circle {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #4da6ff;
+    flex-shrink: 0;
+}
+@keyframes fadeIn {
+    from{opacity: 0}
+    to{opacity: 1}
+}
+.current-user-chats{
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.current-user{
+    display: flex;
+    position: relative;
+    width: 100%;
+    height: 8vh;
+    align-items: center;
+    cursor: pointer;
+    padding: 0 10px;
+}
+.name_and_last_message{
+
+}
+.user-data{
+    display: flex;
+    align-items: center;
+
+}
+.fake-user-avatar{
+    background: deepskyblue;
+    height: 5vh;
+    width: 5vh;
+    min-width: 5vh;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 2vh;
+    color: white;
+    text-transform: uppercase;
+    margin-right: 1.5vh;
+}
+
+
+.last-message {
+    font-size: 12px;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+.name_and_last_message{
+    gap: 0.6vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.user-last-seen{
+    position: absolute;
+    bottom: 1.5vh;
+    right: 1vh;
+    font-size: 13px;
+}
+.username_and_circle{
+    display: flex;
+    align-items: center;
+}
+.username {
+    font-size: 15px;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+.blue-circle-in-channel{
+    margin-left: 12px;
+    position: relative;
+    top: 2px;
+    display: none;
+}
+.loading-indicator {
+    text-align: center;
+    padding: 10px;
+    color: #999;
+}

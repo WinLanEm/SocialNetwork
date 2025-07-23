@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'intertia' => \App\Presentation\Common\Middleware\HandleInertiaRequests::class
         ]);
         $middleware->appendToGroup('web', \App\Presentation\Common\Middleware\HandleInertiaRequests::class);
+        $middleware->appendToGroup('web', \App\Presentation\User\Middleware\RefreshCSRFTokenMiddleware::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

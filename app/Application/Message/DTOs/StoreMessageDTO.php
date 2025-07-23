@@ -6,15 +6,17 @@ class StoreMessageDTO
 {
     public function __construct(
         public string $content,
-        public int $chatId,
+        public string $chatId,
+        public string $tempId,
     )
     {
     }
     public static function fromRequest(array $data):self
     {
         return new self(
-            $data['content'],
-            $data['chat_id']
+            (string) $data['content'],
+            (string) $data['chat_id'],
+            (string) $data['temp_id'],
         );
     }
 }

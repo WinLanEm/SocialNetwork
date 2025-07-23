@@ -5,6 +5,8 @@ use App\Presentation\Chat\Controllers\DestroyChatController;
 use App\Presentation\Chat\Controllers\GetOrCreateChatController;
 use App\Presentation\Chat\Controllers\StoreChatController;
 use App\Presentation\Home\Controllers\HomePageController;
+use App\Presentation\Message\Controllers\MarkIsReadController;
+use App\Presentation\Message\Controllers\PaginateChatMessagesController;
 use App\Presentation\Message\Controllers\StoreMessageController;
 use App\Presentation\User\Controllers\AuthorizationController;
 use App\Presentation\User\Controllers\AuthorizationFormController;
@@ -30,7 +32,9 @@ Route::middleware('is_authorized')->group(function(){
    Route::get('/search_users',SearchUsersController::class)->name('search-users');
 });
 Route::prefix('message')->middleware('is_authorized')->group(function(){
-    Route::post('send',StoreMessageController::class)->name('send-message');
+    Route::post('store',StoreMessageController::class)->name('send-message');
+    Route::get('get_in_chat',PaginateChatMessagesController::class)->name('get-chat-messages');
+    Route::post('mark_messages_is_read',MarkIsReadController::class)->name('mark-messages-as-read');
 });
 Route::prefix('chat')->middleware('is_authorized')->group(function(){
    Route::post('store',GetOrCreateChatController::class)->name('get-or-create-chat');

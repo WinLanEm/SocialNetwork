@@ -20,7 +20,7 @@ class Message extends Model
     protected $casts = [
         'sender_id' => 'integer',
         'consumer_id' => 'integer',
-        'chat_id' => 'integer',
+        'chat_id' => 'string',
         'is_read' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'

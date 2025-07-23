@@ -13,8 +13,11 @@ window.Echo = new Echo({
     auth: {
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-        }
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+        withCredentials: true
     }
 });
 window.axios = axios;
+axios.defaults.withCredentials = true
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';

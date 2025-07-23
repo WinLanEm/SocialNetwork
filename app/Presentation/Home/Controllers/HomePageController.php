@@ -2,14 +2,37 @@
 
 namespace App\Presentation\Home\Controllers;
 
+use App\Common\Controllers\Controller;
+use App\Domain\Chat\Repositories\AddRecipientToChatsRepositoryInterface;
+use App\Domain\Chat\Repositories\ChatIsReadRepositoryInterface;
+use App\Domain\Chat\Repositories\PaginateChatsRepositoryInterface;
 use Inertia\Inertia;
 
-class HomePageController
+class HomePageController extends Controller
 {
+    public function __construct(
+        readonly private PaginateChatsRepositoryInterface       $paginateChatsAction,
+        readonly private AddRecipientToChatsRepositoryInterface $addRecipientToChatsAction,
+    )
+    {
+    }
+
     public function __invoke()
     {
+        $userId = auth()->id();
+        $userChats = $this->paginateChatsAction->exec(1,$userId);
+        if($userChats->isEmpty()){
+            return Inertia::render('Home/Home',[
+                'title' => 'Home',
+                'user_id' => $userId,
+                'chats' => [],
+            ]);
+        }
+        $userChatsWithRecipients = $this->addRecipientToChatsAction->exec(collect($userChats), $userId);
         return Inertia::render('Home/Home',[
-            'title' => 'Home'
+            'title' => 'Home',
+            'user_id' => $userId,
+            'chats' => $userChatsWithRecipients,
         ]);
     }
 }

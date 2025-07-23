@@ -7,8 +7,8 @@ use App\Domain\Chat\Repositories\GetChatByIdRepositoryInterface;
 
 class GetChatByIdRepository implements GetChatByIdRepositoryInterface
 {
-    public function exec(int $chatId):?Chat
+    public function exec(string $chatId):?Chat
     {
-        return Chat::first($chatId);
+        return Chat::find($chatId);
     }
 }

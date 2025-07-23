@@ -18,10 +18,7 @@ class GetOrCreateChatController extends Controller
         $dto = GetOrCreateChatDTO::fromRequest($request->toArray());
         $res = $this->action->exec($dto);
         if($res){
-            return response()->json([
-                'chat_id' => $res['chat_id'],
-                'last_message' => $res['last_message']
-            ]);
+            return response()->json($res);
         }else{
             return response()->json([
                 'error' => 'Server error, try again later'

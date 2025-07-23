@@ -13,13 +13,13 @@ class Chat extends Model
     protected $fillable = [
         'participants',
         'type',
-        'last_message' => '',
+        'last_message',
+        'secret_key',
         'created_at',
         'updated_at'
     ];
 
     protected $casts = [
-        'participants' => 'array',
         'type' => 'string',
         'last_message' => 'string',
         'created_at' => 'datetime',

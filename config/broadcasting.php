@@ -5,6 +5,9 @@ return [
     'connections' => [
         'pusher' => [
             'driver' => 'pusher',
+            'host' => 'localhost',
+            'port' => 443,
+            'scheme' => 'https',
             'key' => env('PUSHER_APP_KEY'),
             'secret' => env('PUSHER_APP_SECRET'),
             'app_id' => env('PUSHER_APP_ID'),
@@ -21,7 +24,8 @@ return [
                     'https://js.pusher.com',
                     'wss://ws-eu.pusher.com',
                     'http://localhost:5173',
-                    'https://localhost:5173'
+                    'https://localhost:5173',
+                    'https://172.18.0.8:5173',
                 ],
             ],
         ],

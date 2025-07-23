@@ -14,7 +14,8 @@ class StoreMessageRequest extends FormRequest
     {
         return [
             'content' => 'required|string|max:65535',
-            'consumer_id' => 'required|integer',
+            'chat_id' => 'required|string',
+            'temp_id' => 'required'
         ];
     }
     public function messages()
@@ -22,7 +23,8 @@ class StoreMessageRequest extends FormRequest
         return [
             'content.required' => 'You can not send empty message',
             'content.max' => 'Message length exceeds maximum',
-            'consumer_id.required' => 'Consumer id is required param',
+            'chat_id.required' => 'Chat id is required param',
+            'temp_id.required' => 'Temp id is required param',
         ];
     }
 }

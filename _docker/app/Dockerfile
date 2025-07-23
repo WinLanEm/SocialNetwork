@@ -7,13 +7,15 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     libmongoc-dev \
     libbson-dev \
+    libssl-dev \
     zip unzip \
     git \
-    && pecl install mongodb \
-    && docker-php-ext-enable mongodb \
+    && pecl install mongodb redis \
+    && docker-php-ext-enable mongodb redis \
     && docker-php-ext-install pdo_mysql pdo_pgsql bcmath gd zip sockets \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \

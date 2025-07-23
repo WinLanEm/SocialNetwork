@@ -6,5 +6,5 @@ use App\Domain\Chat\Entities\Chat;
 
 interface GetChatByIdRepositoryInterface
 {
-    public function exec(int $chatId):?Chat;
+    public function exec(string $chatId):?Chat;
 }
