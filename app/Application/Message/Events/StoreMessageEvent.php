@@ -26,7 +26,8 @@ class StoreMessageEvent implements ShouldBroadcast
             'content' => $message->content,
             'chat_id' => $message->chat_id,
             'is_read' => $message->is_read,
-            'data' => $message->created_at,
+            'updated_at' => $message->updated_at,
+            'id' => $message->id
         ];
     }
 

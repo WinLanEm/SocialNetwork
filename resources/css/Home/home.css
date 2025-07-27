@@ -14,7 +14,7 @@
 }
 
 .other_and_search {
-    border-bottom: 1px solid black;
+    border-right: 1px solid #121212;
     width: 100%;
     height: 8%;
     display: flex;
@@ -26,16 +26,23 @@
 }
 .search-members {
     border-radius: 20px;
-    padding-left: 15px;
-    padding-right: 30px; /* Место для крестика */
-    width: 100%; /* Занимает всю ширину search-wrapper */
-    height: 60%;
+    padding: 10px 40px 10px 15px;
+    width: 100%;
+    height: 40px;
     transition: all 0.3s ease;
-}
-.search-members:focus{
+    border: none;
     outline: none;
-    transform: scale(1.02);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    background-color: #ffffff;
+    color: black;
+    box-shadow:
+        inset 0 1px 3px rgba(0, 0, 0, 0.3),
+        0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.search-members::placeholder {
+    color: #7A7A7A;
+    opacity: 1;
 }
 .profile-button {
     display: flex;
@@ -65,8 +72,6 @@
 .members{
     width: 100%;
     overflow-y: auto;
-    border-top: 1px solid black;
-    border-right: 1px solid black;
     transition: all 0.3s ease;
     opacity: 1;
     max-height: 92vh; /* 100vh - 8% (высота поиска) */
@@ -127,7 +132,8 @@
     width: 100%;
     display: flex;
     height: 8%;
-    background: white;
+    background: #17212b;
+
 }
 .chat-partner-data{
     display: flex;
@@ -139,15 +145,24 @@
     padding-left: 2vh;
 }
 .concrete_user_name_and_last_seen_wrapper > h2 {
-    color: deeppink;
+    color: white;
     display: flex;
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 .concrete_user_name_and_last_seen_wrapper > h6{
-    margin: 0px;
-    padding: 0px;
-    color:purple;
+    margin: 3px 0 0 0;
+    padding: 0;
+    color: #B0B0B0; /* Красивый светло-серый */
+    font-size: 0.85rem;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+    opacity: 0.9;
+    transition: color 0.2s ease;
 }
 .concrete_fake_avatar{
     position: absolute;
@@ -170,7 +185,30 @@
     padding-left: 20px;
     padding-top: 5px;
 }
+.messages-container {
+    /* Стилизация скроллбара для WebKit (Chrome, Safari, Edge) */
+    &::-webkit-scrollbar {
+        width: 6px; /* Ширина тонкого скроллбара */
+    }
 
+    &::-webkit-scrollbar-track {
+        background: transparent; /* Прозрачный фон трека */
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: #3d3d3d; /* Цвет ползунка */
+        border-radius: 3px; /* Скругление углов */
+        transition: background-color 0.3s;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background-color: #5c5c5c; /* Цвет при наведении */
+    }
+
+    /* Для Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: #3d3d3d transparent;
+}
 .message-write-input{
     height: 100%;
     padding-left: 25px;
@@ -439,4 +477,214 @@
     text-align: center;
     padding: 10px;
     color: #999;
+}
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    backdrop-filter: blur(0.1px);
+}
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
+/* Анимация выдвижения сайдбара */
+.slide-enter-active,
+.slide-leave-active {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.slide-enter-from,
+.slide-leave-to {
+    transform: translateX(-100%);
+    opacity: 0;
+}
+.sidebar-avatar-and-username {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 80%;
+    margin: 0 auto;
+    padding: 40px 0;
+    border-bottom: 1px solid #2b5278;
+}
+
+.avatar-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.user-avatar,
+.fake-user-profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #2b5278;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.avatar-upload {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 25px;
+    height: 25px;
+    background-color: #2b5278;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.avatar-upload:hover {
+    background-color: #3d6d95;
+    transform: scale(1.05);
+}
+
+.update-avatar {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.upload-icon {
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1;
+    margin-bottom: 1px;
+}
+
+.username {
+    color: white;
+    font-size: 18px;
+    margin: 0;
+    text-align: center;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 20rem;
+    height: 100%;
+    background-color: #17212b;
+    z-index: 101;
+    transition: transform 0.3s ease;
+}
+.sidebar-active{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    margin-right: auto;
+    margin-left: auto;
+    border-bottom: 1px solid black;
+    padding: 40px 0px;
+    gap: 20px;
+    text-align: center;
+}
+.sidebar-active > button{
+    cursor: pointer;
+    width: 100%;
+    height: 2rem;
+    border-radius: 10%;
+    transition: transform 0.3s ease;
+}
+.sidebar-active > button:hover{
+    transform: scale(1.1);
+}
+
+/* Для анимации открытия/закрытия */
+.slide-enter-active, .slide-leave-active {
+    transition: transform 0.3s ease;
+}
+.slide-enter-from, .slide-leave-to {
+    transform: translateX(-100%);
+}
+.profile{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20rem;
+    height: 45rem;
+    background-color: #17212b;
+    z-index: 101;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+.update_profile_data{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap:20px;
+}
+.update_profile_data > div > input{
+    background-color: #232f3d;
+    color: #e1e9f1;
+    border: none;
+    height: 2rem;
+    width: 14rem;
+    text-align: center;
+    border-radius: 5%;
+}
+.update_profile_data > div > input:focus{
+    outline: none;
+    border-color: #3d6d95
+}
+.update_profile_data > div{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    gap:15px;
+    width: 14rem;
+    height: 5rem;
+}
+.update_profile_data > div:first-child{
+    margin-top: 15px;
+}
+.bio:focus{
+    outline: none;
+    border-color: #3d6d95
+}
+.bio{
+    background-color: #232f3d;
+    color: #e1e9f1;
+    width: 14rem;
+    height: 10rem;
+}
+.update_profile_data > button{
+    margin-top: 30%;
+    padding: 8px 8rem;
+    background-color: #2b5278;
+    color: white;
+    border: none;
+}
+.update_profile_data > button:hover {
+    background-color: #3d6d95; /* Ховер-эффект */
 }

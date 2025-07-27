@@ -14,6 +14,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class MakeMessagesIsReadJob implements ShouldQueue
 {
@@ -31,6 +32,8 @@ class MakeMessagesIsReadJob implements ShouldQueue
         $isReadRepository->exec($this->DTO->messageIds);
         $hasUnreadMessages = $messagesRepository->exec($this->DTO->userId,$this->DTO->chatId,count($this->DTO->messageIds));
         $message = $readMessageByIdRepository->exec($this->DTO->messageIds[0]);
+        Log::info(json_encode($this->DTO));
+        Log::error($message);
         $senderId = $message->sender_id;
         event(new MakeMessagesIsReadEvent($this->DTO->messageIds,$senderId,$this->DTO->chatId));
         if(!$hasUnreadMessages){

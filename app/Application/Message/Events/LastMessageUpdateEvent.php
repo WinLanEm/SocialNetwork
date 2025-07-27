@@ -23,7 +23,8 @@ class LastMessageUpdateEvent implements ShouldBroadcast
         $this->data = [
             'content' => $content,
             'chat_id' => $chatId,
-            'user_id' => $userId
+            'user_id' => $userId,
+            'updated_at' => time()
         ];
     }
 
