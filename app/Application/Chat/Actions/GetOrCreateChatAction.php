@@ -20,6 +20,6 @@ class GetOrCreateChatAction implements GetOrCreateChatActionInterface
         if(!in_array($userId,$users)){
             $users[] = $userId;
         }
-        return $this->repository->exec($users,$DTO->type);
+        return $this->repository->exec($users,$DTO);
     }
 }

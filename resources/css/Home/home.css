@@ -642,7 +642,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap:20px;
+    gap:10px;
 }
 .update_profile_data > div > input{
     background-color: #232f3d;
@@ -661,9 +661,10 @@
     display: flex;
     flex-direction: column;
     text-align: center;
-    gap:15px;
+    gap:10px;
     width: 14rem;
-    height: 5rem;
+    height: 5.2rem;
+    position: relative;
 }
 .update_profile_data > div:first-child{
     margin-top: 15px;
@@ -677,6 +678,7 @@
     color: #e1e9f1;
     width: 14rem;
     height: 10rem;
+    text-align: center;
 }
 .update_profile_data > button{
     margin-top: 30%;
@@ -687,4 +689,20 @@
 }
 .update_profile_data > button:hover {
     background-color: #3d6d95; /* Ховер-эффект */
+}
+.error-message {
+    color: #f56565;
+    font-size: 0.85rem;
+    position: absolute;
+    bottom: 0px;
+    left: 50%;
+    display: block;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+.bio-text{
+    margin: 0px;
+    padding: 0px;
+    font-size: 14px;
+    text-align: center;
 }

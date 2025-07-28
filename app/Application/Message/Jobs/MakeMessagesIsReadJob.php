@@ -32,10 +32,7 @@ class MakeMessagesIsReadJob implements ShouldQueue
         $isReadRepository->exec($this->DTO->messageIds);
         $hasUnreadMessages = $messagesRepository->exec($this->DTO->userId,$this->DTO->chatId,count($this->DTO->messageIds));
         $message = $readMessageByIdRepository->exec($this->DTO->messageIds[0]);
-        Log::info(json_encode($this->DTO));
-        Log::error($message);
-        $senderId = $message->sender_id;
-        event(new MakeMessagesIsReadEvent($this->DTO->messageIds,$senderId,$this->DTO->chatId));
+        event(new MakeMessagesIsReadEvent($this->DTO->messageIds,$message->sender_id,$this->DTO->chatId));
         if(!$hasUnreadMessages){
             event(new MakeChatIsReadEvent($this->DTO->userId,$this->DTO->chatId));
         }

@@ -16,7 +16,7 @@ class DestroyChatController extends Controller
 
     public function __invoke(DestroyChatRequest $request)
     {
-        $res = $this->repository->exec($request->chat_id);
+        $res = $this->repository->exec($request->chat);
         if($res){
             return response()->noContent(201);
         }else{

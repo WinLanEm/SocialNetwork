@@ -47,5 +47,4 @@ class AddRecipientToChatsRepository implements AddRecipientToChatsRepositoryInte
             ->values()
             ->all();
     }
-
 }

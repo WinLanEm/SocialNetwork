@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('bio')->nullable();
             $table->date('date_of_birth')->nullable();
             $table->string('avatar_url')->nullable();
-            $table->date('last_seen')->nullable();
+            $table->datetime('last_seen')->nullable();
             $table->boolean('show_last_seen')->default(true);
             $table->rememberToken();
             $table->timestamps();

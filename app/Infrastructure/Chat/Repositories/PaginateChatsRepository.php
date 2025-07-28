@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Collection;
 
 class PaginateChatsRepository implements PaginateChatsRepositoryInterface
 {
-    private int $perPage = 20;
+    private int $perPage = 50;
     public function __construct(
         readonly private MessageCryptoActionInterface $messageCryptoAction,
     )

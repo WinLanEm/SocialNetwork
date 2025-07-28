@@ -4,32 +4,44 @@
         <div class="profile" v-show="profileIsOpen">
             <div class="sidebar-avatar-and-username">
                 <div class="avatar-container">
-                    <img v-if="user_data.avatar_url" :src="user_data.avatar_url" :alt="user_data.username" class="user-avatar"/>
-                    <div v-else class="fake-user-profile-avatar">{{user_data.username[0]}}</div>
+                    <img v-if="userData.avatar_url" :src="userData.avatar_url" :alt="userData.username" class="user-avatar"/>
+                    <div v-else class="fake-user-profile-avatar">{{userData.username[0]}}</div>
                     <label class="avatar-upload">
-                        <input type="file" class="update-avatar" accept="image/*">
+                        <input type="file" name="avatar_url" class="update-avatar" accept="image/*" @change="avatarUpload">
                         <span class="upload-icon">+</span>
+                        <span v-if="updateProfileErrors.avatar_url" class="error-message">
+                        {{ updateProfileErrors.avatar_url[0] }}
+                    </span>
                     </label>
                 </div>
-                <h3 class="username">{{user_data.username}}</h3>
+                <h3 class="username">{{userData.username}}</h3>
             </div>
-            <form class="update_profile_data">
+            <form class="update_profile_data" @submit.prevent="updateProfileData">
                 <div>
                     <label for="username">username</label>
-                    <input :value="user_data.username" name="username"/>
+                    <input :value="userData.username" name="username"/>
+                    <span v-if="updateProfileErrors.username" class="error-message">
+                        {{ updateProfileErrors.username[0] }}
+                    </span>
                 </div>
                 <div>
                     <label for="phone">phone</label>
-                    <input name="phone" :value="user_data.phone"/>
+                    <input name="phone" :value="userData.phone"/>
+                    <span v-if="updateProfileErrors.phone" class="error-message">
+                        {{ updateProfileErrors.phone[0] }}
+                    </span>
                 </div>
                 <div class="bio-div">
                     <label for="bio">bio</label>
-                    <textarea class="bio" name="bio" :value="user_data.bio"/>
+                    <textarea class="bio" name="bio" :value="userData.bio"/>
+                    <span v-if="updateProfileErrors.bio" class="error-message">
+                        {{ updateProfileErrors.bio[0] }}
+                    </span>
                 </div>
                 <button type="submit">update</button>
             </form>
         </div>
-        <div class="chats" :class="{'sidebar-active':isInputFocused}">
+        <div class="chats">
             <transition name="fade">
                 <div
                     v-if="sideBarIsOpen || profileIsOpen"
@@ -44,9 +56,10 @@
                     @click.stop
                 >
                     <div class="sidebar-avatar-and-username">
-                        <img v-if="user_data.avatar_url" :src="user_data.avatar_url" :alt="user_data.username"/>
-                        <div v-else class="fake-user-avatar">{{user_data.username[0]}}</div>
-                        <h3 class="username">{{user_data.username}}</h3>
+                        <img v-if="userData.avatar_url" :src="userData.avatar_url" :alt="userData.username" class="user-avatar"/>
+                        <div v-else class="fake-user-avatar">{{userData.username[0]}}</div>
+                        <h3 class="username">{{userData.username}}</h3>
+                        <h3 class="bio-text">{{userData.bio}}</h3>
                     </div>
                     <div class="sidebar-active">
                         <button @click="profileIsOpen = true; sideBarIsOpen = false">My profile</button>
@@ -88,7 +101,7 @@
                             <div class="fake-avatar" v-else>{{user.username[0]}}</div>
                             <div class="name_and_last_seen">
                                 <h3>{{user.username}}</h3>
-                                <h6 v-if="user.last_seen">{{user.last_seen}}</h6>
+                                <h6 v-if="user.last_seen">{{formatDataToUser(user.last_seen)}}</h6>
                             </div>
                         </li>
                     </ul>
@@ -97,13 +110,14 @@
                     <ul class="current-user-chats">
                         <li v-for="chat in internalChats" :key="chat.id" class="current-user" @mousedown.prevent @click="showChat(chat.recipient.data)">
                             <div class="user-data">
-                                <div class="fake-user-avatar">{{chat.recipient.data.username[0]}}</div>
+                                <img class="fake-user-avatar" v-if="chat.recipient.data.avatar_url" :src="chat.recipient.data.avatar_url" :alt="chat.recipient.data.avatar_url"/>
+                                <div v-else class="fake-user-avatar">{{chat.recipient.data.username[0]}}</div>
                                 <div class="name_and_last_message">
                                     <div class="username_and_circle">
                                         <h3 class="username">{{ chat.recipient.data.username }}</h3>
                                         <div
                                             class="blue-circle blue-circle-in-channel"
-                                            :style="{ display: chat.chat_data.is_read && chat.recipient.id !== user_id ? 'none' : 'block' }"
+                                            :style="{ display: chat.chat_data.is_read ? 'none' : 'block' }"
                                         ></div>
                                     </div>
                                     <h3 class="last-message">{{chat.chat_data.last_message}}</h3>
@@ -124,10 +138,10 @@
                 <div class="chat-partner-data" ref="partnerData">
                     <div class="concrete_user_name_and_last_seen_wrapper">
                         <h2>{{partnerInfo.username}}</h2>
-                        <h6 v-if="partnerInfo.lastSeen">{{partnerInfo.lastSeen}}</h6>
+                        <h6 v-if="partnerInfo.lastSeen">{{formatDataToUser(partnerInfo.lastSeen)}}</h6>
                         <h6 v-else>latest ago</h6>
                     </div>
-                    <img v-if="partnerInfo.avatar" :alt="partnerInfo.username" :src="partnerInfo.avatar"/>
+                    <img class="fake-avatar concrete_fake_avatar" v-if="partnerInfo.avatar" :alt="partnerInfo.username" :src="partnerInfo.avatar"/>
                     <div v-else class="fake-avatar concrete_fake_avatar">{{partnerInfo.username[0]}}</div>
                 </div>
                 <div class="chat-partner-buttons"></div>
@@ -177,6 +191,7 @@
 <script>
 import {Head} from "@inertiajs/vue3";
 import {ref, watch, onMounted, onUnmounted, nextTick} from "vue";
+import { debounce } from 'lodash-es';
 
 export default {
     components: {
@@ -215,6 +230,7 @@ export default {
         document.removeEventListener('click', this.handleClickOutside);
     },
     setup(props) {
+        const updateProfileErrors = ref({})
         const profileIsOpen = ref(false)
         const sideBarIsOpen = ref(false)
         const currentChatLastMessage = ref('');
@@ -234,10 +250,37 @@ export default {
         const hasMoreMessages = ref(true);
         const page = ref(1);
         const messages = ref([]);
+        let lastSeenInterval = null;
         const partnerInfo = ref({
             username: '',
             lastSeen: '',
-            avatar: ''
+            avatar: '',
+            id: ''
+        })
+        watch(() => partnerInfo.value.id, (newPartnerId, oldPartnerId) => {
+                if(newPartnerId){
+                    nextTick(() => {
+                        if(oldPartnerId) {
+                            window.Echo.leave(`last_seen.${oldPartnerId}`);
+                        }
+
+                        window.Echo.private(`last_seen.${newPartnerId}`)
+                            .listen('.user.offline', data => {
+                                partnerInfo.value.lastSeen = formatDataToUser(data.last_seen)
+                            })
+                            .listen('.user.online', data => {
+                                partnerInfo.value.lastSeen = data.last_seen
+                        });
+
+                    })
+                }
+            }, { deep: true })
+        ;
+        const userData = ref({
+            username: props.user_data.username,
+            avatar_url: props.user_data.avatar_url,
+            bio:props.user_data.bio,
+            phone:props.user_data.phone
         })
         const internalChats = ref([...props.chats]);
         let debounceTimer;
@@ -263,8 +306,11 @@ export default {
             }
         }, {immediate: true});
 
+
         onMounted(() => {
             csrfToken.value = document.querySelector('meta[name="csrf-token"]')?.content || '';
+            updateLastSeen();
+            lastSeenInterval = setInterval(updateLastSeen, 45000);
             window.Echo.private(`chat_render_by_user.${Number(props.user_id)}`)
                 .listen('.chat.render', data => {
                     internalChats.value = [{
@@ -279,7 +325,7 @@ export default {
                         chat_data: {
                             chat_id: data.chat_id,
                             last_message: data.last_message,
-                            is_read: data.is_read && data.sender.id !== props.user_id,
+                            is_read: data.is_read,
                             updated_at: data.data
                         }
                     }, ...internalChats.value];
@@ -302,6 +348,9 @@ export default {
         onUnmounted(() => {
             if (observer.value) {
                 observer.value.disconnect();
+            }
+            if (lastSeenInterval) {
+                clearInterval(lastSeenInterval);
             }
         })
         const updateMessageId = (data) => {
@@ -467,14 +516,17 @@ export default {
 
         async function showChat(user) {
             if (isChatLoading.value || loading.value) return;
+            await updateLastSeen();
             isInputFocused.value = false
             isChatLoading.value = true;
             try {
                 partnerInfo.value = {
                     username: user.username,
-                    lastSeen: user.last_seen ? user.last_seen : 'ago',
-                    avatar: user.avatar_url || null
+                    lastSeen: user.last_seen || null,
+                    avatar: user.avatar_url || null,
+                    id: user.id,
                 }
+
                 if (currentChatId.value !== null && currentChatLastMessage.value === '') {
                     try {
                         await deletePreviousChat();
@@ -554,6 +606,7 @@ export default {
                     messages.value = []
                 }
                 currentChatId.value = chatData.chat_id;
+                partnerInfo.value.lastSeen = chatData.last_seen
                 currentChatLastMessage.value = chatData.last_message;
             } catch (error) {
                 console.error('Create chat error:', error);
@@ -695,6 +748,13 @@ export default {
                 hour12: false
             });
         }
+        function formatData(data) {
+            return data.toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+        }
 
         async function readWebsocketMessage(messageId,chatId,userId) {
             await fetch(route('mark-messages-as-read'), {
@@ -707,8 +767,101 @@ export default {
                 })
             })
         }
+        const updateProfileData = async (e) => {
+            updateProfileErrors.value = {}
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const formDataObj = Object.fromEntries(formData);
+            const response = await fetch(route('update-profile'), {
+                method: 'PATCH',
+                body: JSON.stringify(formDataObj),
+                headers: getHeaders()
+            });
 
+            if (!response.ok) {
+                const errorData = await response.json();
+                if (errorData.errors) {
+                    updateProfileErrors.value = errorData.errors;
+                } else {
+                    throw new Error(errorData.message || 'Update failed');
+                }
+                return;
+            }
+
+            const result = await response.json();
+            userData.value = { ...userData.value, ...result };
+        }
+        const avatarUpload = async (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            updateProfileErrors.value = {};
+            event.preventDefault();
+
+
+            const formData = new FormData();
+            formData.append('avatar_url', file);
+
+            try {
+                const response = await fetch(route('update-avatar'), {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken.value,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    if (errorData.errors) {
+                        updateProfileErrors.value = errorData.errors;
+                    } else {
+                        throw new Error(errorData.message || 'Update failed');
+                    }
+                    return;
+                }
+
+                const result = await response.json();
+                userData.value = { ...userData.value, ...result };
+            } catch (error) {
+                console.error('Ошибка при загрузке аватара:', error);
+            }
+        };
+        const updateLastSeen = debounce(async () => {
+            try {
+                await fetch(route('update-last-seen'), {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        last_seen: getCurrentLastSeen() // Отправляем текущее время
+                    }),
+                    headers: getHeaders(),
+                });
+            } catch (error) {
+                console.error('Error updating last seen:', error);
+            }
+        }, 30000);
+        function getCurrentLastSeen() {
+            const now = new Date();
+
+            // Получаем локальные компоненты даты
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+
+            // Формат для БД: YYYY-MM-DD HH:MM:SS
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        }
         return {
+            avatarUpload,
+            updateProfileErrors,
+            updateProfileData,
+            userData,
             sendMessage,
             searchQuery,
             users,
@@ -725,6 +878,8 @@ export default {
             internalChats,
             sideBarIsOpen,
             profileIsOpen,
+            getCurrentTime,
+            formatData
         };
     }
 };

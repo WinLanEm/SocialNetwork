@@ -2,15 +2,19 @@
 
 namespace App\Providers;
 
+use App\Application\Chat\Actions\ChatRenderAction;
 use App\Application\Chat\Actions\ChatTokenCryptoAction;
 use App\Application\Chat\Actions\GetOrCreateChatAction;
 use App\Application\ChatUnreadMessage\Repositories\StoreUnreadMessagesCountRepository;
 use App\Application\Message\Actions\ChoiceStoreMessageStrategy;
 use App\Application\Message\Actions\MessageCryptoAction;
+use App\Application\Message\Actions\UpdateLastMessageAction;
 use App\Application\User\Actions\AuthorizationAction;
 use App\Application\User\Actions\LogoutAction;
 use App\Application\User\Actions\RegisterAction;
+use App\Application\User\Actions\UpdateLastSeenAction;
 use App\Application\User\Tasks\PreparePhoneTask;
+use App\Domain\Chat\Actions\ChatRenderActionInterface;
 use App\Domain\Chat\Actions\ChatTokenCryptoActionInterface;
 use App\Domain\Chat\Actions\GetOrCreateChatActionInterface;
 use App\Domain\Chat\Repositories\AddRecipientToChatsRepositoryInterface;
@@ -20,8 +24,8 @@ use App\Domain\Chat\Repositories\GetChatByIdRepositoryInterface;
 use App\Domain\Chat\Repositories\GetOrCreateChatRepositoryInterface;
 use App\Domain\Chat\Repositories\PaginateChatsRepositoryInterface;
 use App\Domain\ChatUnreadMessage\Repositories\StoreUnreadMessagesCountRepositoryInterface;
-use App\Domain\Message\Actions\ChoiceStoreMessageStrategyInterface;
 use App\Domain\Message\Actions\MessageCryptoActionInterface;
+use App\Domain\Message\Actions\UpdateLastMessageActionInterface;
 use App\Domain\Message\Repositories\DecrementUnreadMessagesRepositoryInterface;
 use App\Domain\Message\Repositories\MakeMessagesIsReadRepositoryInterface;
 use App\Domain\Message\Repositories\PaginateChatMessagesRepositoryInterface;
@@ -33,6 +37,7 @@ use App\Domain\User\Repositories\AuthUserRepositoryInterface;
 use App\Domain\User\Repositories\CreateUserRepositoryInterface;
 use App\Domain\User\Repositories\GetUserByIdRepositoryInterface;
 use App\Domain\User\Repositories\SearchUserRepositoryInterface;
+use App\Domain\User\Repositories\UserUpdateRepositoryInterface;
 use App\Domain\User\Tasks\PreparePhoneTaskInterface;
 use App\Infrastructure\Chat\Repositories\AddRecipientToChatsRepository;
 use App\Infrastructure\Chat\Repositories\ChatIsReadRepository;
@@ -48,6 +53,7 @@ use App\Infrastructure\User\Repositories\AuthUserRepository;
 use App\Infrastructure\User\Repositories\CreateUserRepository;
 use App\Infrastructure\User\Repositories\GetUserByIdRepository;
 use App\Infrastructure\User\Repositories\SearchUserRepository;
+use App\Infrastructure\User\Repositories\UserUpdateRepository;
 use Illuminate\Support\ServiceProvider;
 
 
@@ -149,6 +155,18 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             ReadMessageByIdRepositoryInterface::class,
             ReadMessageByIdRepository::class
+        );
+        $this->app->bind(
+            UserUpdateRepositoryInterface::class,
+            UserUpdateRepository::class
+        );
+        $this->app->bind(
+            ChatRenderActionInterface::class,
+            ChatRenderAction::class
+        );
+        $this->app->bind(
+            UpdateLastMessageActionInterface::class,
+            UpdateLastMessageAction::class
         );
     }
 

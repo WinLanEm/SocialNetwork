@@ -29,3 +29,7 @@ Broadcast::channel('make_chat_is_read_user.{userId}', function ($user, $userId) 
 Broadcast::channel('send_real_id.{userId}', function ($user, $userId) {
     return (int)$user->id === (int)$userId;
 });
+Broadcast::channel('last_seen.{userId}', function ($user, $userId) {
+    return true;
+});
+

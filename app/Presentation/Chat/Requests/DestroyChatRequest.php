@@ -13,14 +13,14 @@ class DestroyChatRequest extends FormRequest
     public function rules()
     {
         return [
-            'chat_id' => 'required|string',
+            'chat' => 'required|string',
         ];
     }
     public function messages()
     {
         return [
-            'chat_id.required' => 'You can not send empty chat_id',
-            'chat_id.string' => 'Chat_id required type is string',
+            'chat.required' => 'You can not send empty chat_id',
+            'chat.string' => 'Chat_id required type is string',
         ];
     }
 }
