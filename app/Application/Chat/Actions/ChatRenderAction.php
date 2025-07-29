@@ -19,17 +19,17 @@ class ChatRenderAction implements ChatRenderActionInterface
         $recipientId = $this->resolveRecipientId($members,$message->sender_id);
         $sender = $this->userRepository->exec($message->sender_id);
         $recipient = $this->userRepository->exec($recipientId);
-        $this->dispatchRenderEvents($message,$chat->id,$sender,$recipient,$recipientId);
+        $this->dispatchRenderEvents($message,$chat,$sender,$recipient,$recipientId);
     }
     private function resolveRecipientId(array $members, int $senderId): int
     {
         return ((int)$members[0] !== $senderId) ? $members[0] : $members[1];
     }
 
-    private function dispatchRenderEvents(Message $message, string $chatId, User $sender, User $recipient, int $recipientId): void
+    private function dispatchRenderEvents(Message $message,Chat $chat, User $sender, User $recipient, int $recipientId): void
     {
-        event(new RenderChatEvent($recipientId, $message->content, $message->created_at, $sender, $chatId, true));
-        event(new RenderChatEvent($message->sender_id, $message->content, $message->created_at, $recipient, $chatId, false));
+        event(new RenderChatEvent($recipientId, $message->content, $chat->updated_at->toISOString(), $sender, $chat->id, true));
+        event(new RenderChatEvent($message->sender_id, $message->content, $chat->updated_at->toISOString(), $recipient, $chat->id, false));
     }
 
 }

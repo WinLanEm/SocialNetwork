@@ -34,6 +34,8 @@ services:
         container_name: project_app
         environment:
             - APP_ENV=dev
+            - NPM_CONFIG_CACHE=/home/node/.npm
+            - NPM_CONFIG_PREFIX=/home/node/.npm
         ports:
             - "5173:5173"
         networks:

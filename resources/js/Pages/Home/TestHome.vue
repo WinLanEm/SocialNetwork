@@ -117,7 +117,7 @@
                                         <h3 class="username">{{ chat.recipient.data.username }}</h3>
                                         <div
                                             class="blue-circle blue-circle-in-channel"
-                                            :style="{ display: chat.chat_data.is_read ? 'none' : 'block' }"
+                                            :style="{ display: chat.chat_data.is_read || user_id !== chat.recipient.data.id ? 'none' : 'block' }"
                                         ></div>
                                     </div>
                                     <h3 class="last-message">{{chat.chat_data.last_message}}</h3>
@@ -230,7 +230,6 @@ export default {
         document.removeEventListener('click', this.handleClickOutside);
     },
     setup(props) {
-        console.log(props.chats)
         const updateProfileErrors = ref({})
         const profileIsOpen = ref(false)
         const sideBarIsOpen = ref(false)
@@ -314,6 +313,7 @@ export default {
             lastSeenInterval = setInterval(updateLastSeen, 45000);
             window.Echo.private(`chat_render_by_user.${Number(props.user_id)}`)
                 .listen('.chat.render', data => {
+                    console.log(data)
                     internalChats.value = [{
                         id: data.chat_id,
                         recipient: {
