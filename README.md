@@ -1,23 +1,32 @@
-Перед сборкой контейнера выполните
+# Project Setup Guide
 
+## Initial Setup (Host Machine)
+```bash
+# Create required directories and set permissions
 mkdir -p tmp/db tmp/redis tmp/minio tmp/mongo tmp/elasticsearch
 chmod -R 775 storage tmp
 
+# Build Docker containers
 docker-compose build
 
-После сборки контейнера
-
+# Enter the application container
 docker exec -it project_app bash
 
-composer install </br>
-php artisan migrate <br>
-php artisan elasticsearch:create-index users --force<br>
-
-npm install <br>
-npm run dev <br>
-php artisan queue:work <br>
-php artisan db:seed (будет длится в районе минуты, потому что в seed 10000 записей для демонстрации работы поиска через elasticsearch) <br>
-php artisan mongo:indexes<br> 
-php artisan key:generate<br>
+# Environment setup
+cp .env.example .env
+composer install
+npm install
+php artisan key:generate
 php artisan storage:link
 
+# Database setup
+php artisan migrate
+php artisan elasticsearch:create-index users --force
+php artisan mongo:indexes
+
+# Seed database (~1 minute for 10k demo records)
+php artisan db:seed
+
+# Start development services
+npm run dev
+php artisan queue:work
