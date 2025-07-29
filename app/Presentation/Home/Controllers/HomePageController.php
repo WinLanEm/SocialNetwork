@@ -4,7 +4,6 @@ namespace App\Presentation\Home\Controllers;
 
 use App\Common\Controllers\Controller;
 use App\Domain\Chat\Repositories\AddRecipientToChatsRepositoryInterface;
-use App\Domain\Chat\Repositories\ChatIsReadRepositoryInterface;
 use App\Domain\Chat\Repositories\PaginateChatsRepositoryInterface;
 use App\Domain\User\Repositories\GetUserByIdRepositoryInterface;
 use Inertia\Inertia;

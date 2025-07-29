@@ -18,6 +18,7 @@ use App\Domain\Chat\Actions\ChatRenderActionInterface;
 use App\Domain\Chat\Actions\ChatTokenCryptoActionInterface;
 use App\Domain\Chat\Actions\GetOrCreateChatActionInterface;
 use App\Domain\Chat\Repositories\AddRecipientToChatsRepositoryInterface;
+use App\Domain\Chat\Repositories\CacheChatsRepositoryInterface;
 use App\Domain\Chat\Repositories\ChatIsReadRepositoryInterface;
 use App\Domain\Chat\Repositories\DestroyChatRepositoryInterface;
 use App\Domain\Chat\Repositories\GetChatByIdRepositoryInterface;
@@ -40,6 +41,7 @@ use App\Domain\User\Repositories\SearchUserRepositoryInterface;
 use App\Domain\User\Repositories\UserUpdateRepositoryInterface;
 use App\Domain\User\Tasks\PreparePhoneTaskInterface;
 use App\Infrastructure\Chat\Repositories\AddRecipientToChatsRepository;
+use App\Infrastructure\Chat\Repositories\CacheChatsRepository;
 use App\Infrastructure\Chat\Repositories\ChatIsReadRepository;
 use App\Infrastructure\Chat\Repositories\DestroyChatRepository;
 use App\Infrastructure\Chat\Repositories\GetChatByIdRepository;
@@ -167,6 +169,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             UpdateLastMessageActionInterface::class,
             UpdateLastMessageAction::class
+        );
+        $this->app->bind(
+            CacheChatsRepositoryInterface::class,
+            CacheChatsRepository::class
         );
     }
 

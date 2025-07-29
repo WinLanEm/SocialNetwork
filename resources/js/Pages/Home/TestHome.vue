@@ -230,6 +230,7 @@ export default {
         document.removeEventListener('click', this.handleClickOutside);
     },
     setup(props) {
+        console.log(props.chats)
         const updateProfileErrors = ref({})
         const profileIsOpen = ref(false)
         const sideBarIsOpen = ref(false)

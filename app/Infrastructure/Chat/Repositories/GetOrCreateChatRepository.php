@@ -5,6 +5,7 @@ namespace App\Infrastructure\Chat\Repositories;
 use App\Application\Chat\DTOs\GetOrCreateChatDTO;
 use App\Application\Message\Actions\MessageCryptoAction;
 use App\Domain\Chat\Entities\Chat;
+use App\Domain\Chat\Repositories\CacheChatsRepositoryInterface;
 use App\Domain\Chat\Repositories\GetOrCreateChatRepositoryInterface;
 use App\Domain\Message\Repositories\PaginateChatMessagesRepositoryInterface;
 use App\Domain\User\Repositories\GetUserByIdRepositoryInterface;
@@ -14,7 +15,8 @@ class GetOrCreateChatRepository implements GetOrCreateChatRepositoryInterface
 {
     public function __construct(
         readonly private PaginateChatMessagesRepositoryInterface $paginateChatMessagesRepository,
-        readonly private GetUserByIdRepositoryInterface $getUserByIdRepository
+        readonly private GetUserByIdRepositoryInterface $getUserByIdRepository,
+        readonly private CacheChatsRepositoryInterface $cacheChatsRepository
     )
     {
     }

@@ -4,6 +4,7 @@ namespace App\Infrastructure\Chat\Repositories;
 
 use App\Domain\Chat\Entities\Chat;
 use App\Domain\Chat\Repositories\AddRecipientToChatsRepositoryInterface;
+use App\Domain\Chat\Repositories\CacheChatsRepositoryInterface;
 use App\Domain\Chat\Repositories\ChatIsReadRepositoryInterface;
 use App\Domain\User\Entities\User;
 use Illuminate\Support\Collection;
@@ -12,6 +13,7 @@ class AddRecipientToChatsRepository implements AddRecipientToChatsRepositoryInte
 {
     public function __construct(
         readonly private ChatIsReadRepositoryInterface $chatIsReadRepository,
+        readonly private CacheChatsRepositoryInterface $cacheChatsRepository,
     )
     {
     }
@@ -24,12 +26,23 @@ class AddRecipientToChatsRepository implements AddRecipientToChatsRepositoryInte
             ->unique()
             ->values()
             ->all();
-        $recipientsData = User::whereIn('id', $allRecipientIds)
-            ->get(['username','avatar_url','id','last_seen'])
+        $recipientsData = $this->cacheChatsRepository->getRecipientsDataForPrivate($allRecipientIds);
+        if(empty($recipientsData)){
+            $recipientsData = User::whereIn('id', $allRecipientIds)
+                ->get(['username','avatar_url','id'])
+                ->keyBy('id')
+                ->map(function ($user){
+                    return $user->toArray();
+                })
+                ->toArray();
+            $this->cacheChatsRepository->putRecipientsDataForPrivate($allRecipientIds,$recipientsData);
+        }
+        $lastSeens = User::whereIn('id', $allRecipientIds)
+            ->get(['id', 'last_seen'])
             ->keyBy('id');
         $chatsIsRead = $this->chatIsReadRepository->exec($userChats->pluck('id')->toArray(), $currentUserId);
         return $userChats
-            ->map(function (Chat $chat) use ($currentUserId, $recipientsData,$chatsIsRead) {
+            ->map(function (Chat $chat) use ($currentUserId, $recipientsData,$chatsIsRead,$lastSeens) {
                 $recipientId = array_values(array_diff($chat->participants, [$currentUserId]))[0] ?? null;
                 return [
                     'chat_data' => [
@@ -40,7 +53,10 @@ class AddRecipientToChatsRepository implements AddRecipientToChatsRepositoryInte
                     ],
                     'recipient' => $recipientId ? [
                         'id' => $recipientId,
-                        'data' => $recipientsData[$recipientId] ?? null
+                        'data' => array_merge(
+                            $recipientsData[$recipientId] ?? [],
+                            ['last_seen' => $lastSeens[$recipientId]->last_seen ?? null]
+                        )
                     ] : null
                 ];
             })
