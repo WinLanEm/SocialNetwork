@@ -31,6 +31,7 @@ class UserUpdateRepository implements UserUpdateRepositoryInterface
             $url = Storage::disk('public')->url($path);
             $user->update([
                 'avatar_url' => $url,
+                ...$request->only('username','bio','phone')
             ]);
             return $user->fresh();
         }
