@@ -12,11 +12,16 @@ class SearchUserRepository implements SearchUserRepositoryInterface
     {
         if (empty($username)) {
             return null;
-        } else {
-            return User::search($username)
-                ->query(fn($query) => $query->select(['id','username','avatar_url','last_seen']))
-                ->take(10)
-                ->get();
         }
+        $currentUserId = auth()->id();
+        $searchTerm = strtolower($username);
+
+        return User::search($searchTerm)
+            ->query(fn($query) => $query
+                ->select(['id', 'username', 'avatar_url', 'last_seen'])
+                ->where('id', '!=', $currentUserId)
+            )
+            ->take(10)
+            ->get();
     }
 }

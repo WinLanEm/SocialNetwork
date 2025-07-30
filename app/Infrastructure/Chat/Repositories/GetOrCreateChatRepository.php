@@ -16,7 +16,6 @@ class GetOrCreateChatRepository implements GetOrCreateChatRepositoryInterface
     public function __construct(
         readonly private PaginateChatMessagesRepositoryInterface $paginateChatMessagesRepository,
         readonly private GetUserByIdRepositoryInterface $getUserByIdRepository,
-        readonly private CacheChatsRepositoryInterface $cacheChatsRepository
     )
     {
     }

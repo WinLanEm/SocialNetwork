@@ -2,10 +2,14 @@
 
 namespace App\Domain\Message\Entities;
 
+use Database\Factories\MessageFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use MongoDB\Laravel\Eloquent\Model;
 
 class Message extends Model
 {
+    use HasFactory;
+    /** @use HasFactory<\Database\Factories\MessageFactory> */
     protected $connection = 'mongodb';
     protected $collection = 'messages';
     protected $fillable = [
@@ -29,4 +33,8 @@ class Message extends Model
     protected $attributes = [
         'is_read' => false
     ];
+    protected static function newFactory()
+    {
+        return MessageFactory::new();
+    }
 }

@@ -3,10 +3,16 @@
 namespace App\Domain\Chat\Entities;
 
 use App\Domain\ModelTraits\HandlesMongoArrays;
+
+use Database\Factories\ChatFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use MongoDB\Laravel\Eloquent\Model;
 
 class Chat extends Model
 {
+    use HasFactory;
+    /** @use HasFactory<\Database\Factories\ChatFactory> */
+
     use HandlesMongoArrays;
     protected $connection = 'mongodb';
     protected $collection = 'chats';
@@ -32,5 +38,9 @@ class Chat extends Model
     {
         $this->setArrayAttribute('participants', $value);
         $this->attributes['participants_hashed'] = md5(implode('|', $value));
+    }
+    protected static function newFactory()
+    {
+        return ChatFactory::new();
     }
 }

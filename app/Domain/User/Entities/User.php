@@ -15,7 +15,6 @@ use Laravel\Scout\Searchable;
 
 class User extends Authenticatable
 {
-    private int $ttl = 120;
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, SoftDeletes, Searchable;
 

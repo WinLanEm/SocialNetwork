@@ -30,4 +30,20 @@ class StoreUnreadMessagesCountJob implements ShouldQueue
             }
         });
     }
+
+    public function getChatMembersIds(): array
+    {
+        return $this->chatMembersIds;
+    }
+
+    public function getChatId(): string
+    {
+        return $this->chatId;
+    }
+
+    public function getSenderId(): int
+    {
+        return $this->senderId;
+    }
+
 }
