@@ -40,7 +40,11 @@ class GetOrCreateChatRepository implements GetOrCreateChatRepositoryInterface
                 'last_message' => $chat->last_message,
                 'messages' => []
             ];
-        }else{
+        }
+        else{
+            if(!in_array(auth()->id(),$chat->participants)){
+                return [];
+            }
             return [
                 'last_seen' => $chatUser->last_seen,
                 'chat_id' => $chat->id,

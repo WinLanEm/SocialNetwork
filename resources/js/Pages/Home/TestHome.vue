@@ -117,7 +117,7 @@
                                         <h3 class="username">{{ chat.recipient.data.username }}</h3>
                                         <div
                                             class="blue-circle blue-circle-in-channel"
-                                            :style="{ display: chat.chat_data.is_read || user_id !== chat.recipient.data.id ? 'none' : 'block' }"
+                                            :style="{ display: chat.chat_data.is_read || user_id === chat.recipient.data.id ? 'none' : 'block' }"
                                         ></div>
                                     </div>
                                     <h3 class="last-message">{{chat.chat_data.last_message}}</h3>
@@ -257,6 +257,7 @@ export default {
             avatar: '',
             id: ''
         })
+        console.log(props.chats)
         watch(() => partnerInfo.value.id, (newPartnerId, oldPartnerId) => {
                 if(newPartnerId){
                     nextTick(() => {
