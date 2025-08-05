@@ -24,18 +24,5 @@ Route::middleware('is_not_authorized')->group(function(){
 });
 Route::middleware('is_authorized')->group(function(){
     Route::get('/',HomePageController::class)->name('home');
-   Route::post('/logout',LogoutController::class)->name('logout');
-   Route::get('/search/users',SearchUsersController::class)->name('search-users');
-   Route::patch('/update/profile',UserUpdateController::class)->name('update-profile');
-   Route::post('/update/avatar',UserUpdateController::class)->name('update-avatar');
-   Route::post('/update/last_seen',UpdateLastSeenController::class)->name('update-last-seen');
-});
-Route::prefix('messages')->middleware('is_authorized')->group(function(){
-    Route::post('/',StoreMessageController::class)->name('send-message');
-    Route::post('mark_messages_is_read',MarkIsReadController::class)->name('mark-messages-as-read');
-});
-Route::prefix('chats')->middleware('is_authorized')->group(function(){
-    Route::get('messages',PaginateChatMessagesController::class)->name('get-chat-messages');
-    Route::post('/',GetOrCreateChatController::class)->name('get-or-create-chat');
-    Route::delete('/{chat}',DestroyChatController::class)->name('destroy-chat');
+   Route::get('/logout',LogoutController::class)->name('logout');
 });

@@ -8,6 +8,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',
+        api: __DIR__.'/../routes/api.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
@@ -16,6 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'is_authorized' => \App\Presentation\User\Middleware\IsAuthorizedMiddleware::class,
             'intertia' => \App\Presentation\Common\Middleware\HandleInertiaRequests::class
         ]);
+        $middleware->statefulApi();
+
         $middleware->appendToGroup('web', \App\Presentation\Common\Middleware\HandleInertiaRequests::class);
         $middleware->appendToGroup('web', \App\Presentation\User\Middleware\RefreshCSRFTokenMiddleware::class);
     })

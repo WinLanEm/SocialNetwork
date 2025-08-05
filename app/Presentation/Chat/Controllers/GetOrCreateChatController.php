@@ -17,12 +17,13 @@ class GetOrCreateChatController extends Controller
     {
         $dto = GetOrCreateChatDTO::fromRequest($request->toArray());
         $res = $this->action->exec($dto);
-        if($res){
-            return response()->json($res);
-        }else{
+        if(empty($res)){
             return response()->json([
-                'error' => 'Server error, try again later'
-            ])->status(500);
+                'status' => false,
+                'message' => 'You do not have permission to see this chat'
+            ],403);
+        }else{
+            return response()->json($res);
         }
     }
 }

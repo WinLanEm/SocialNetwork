@@ -9,9 +9,12 @@ class IsAuthorizedMiddleware
 {
     public function handle(Request $request,Closure $next)
     {
-        if(!auth()->user()){
-            return redirect()->route('authorization-form')->with('message','Для доступа к этой странице нужно авторизоваться');
+        if (!auth()->check()) {
+            // Для веб-запросов - редирект
+            return redirect()->route('authorization-form')
+                ->with('message', 'You need to login first');
         }
+
         return $next($request);
     }
 }

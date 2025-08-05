@@ -9,9 +9,11 @@ class IsNotAuthorizedMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        if(auth()->user()){
-            return redirect()->route('home')->with('message','Доступ к странице есть только у не авторизованных пользователей');
-        };
+        if (auth()->check()) {
+            // Для веб-запросов
+            return redirect()->route('home')->with('message', 'You need to logout first');
+        }
+
         return $next($request);
     }
 }
