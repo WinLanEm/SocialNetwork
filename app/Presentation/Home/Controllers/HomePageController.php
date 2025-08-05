@@ -24,7 +24,7 @@ class HomePageController extends Controller
         $userData = $this->getUserByIdRepository->exec($userId);
         $userChats = $this->paginateChatsAction->exec(1,$userId);
         if($userChats->isEmpty()){
-            return Inertia::render('Home/TestHome',[
+            return Inertia::render('Home/Home',[
                 'title' => 'Home',
                 'user_id' => $userId,
                 'chats' => [],
@@ -32,7 +32,7 @@ class HomePageController extends Controller
             ]);
         }
         $userChatsWithRecipients = $this->addRecipientToChatsAction->exec(collect($userChats), $userId);
-        return Inertia::render('Home/TestHome',[
+        return Inertia::render('Home/Home',[
             'title' => 'Home',
             'user_id' => $userId,
             'chats' => $userChatsWithRecipients,

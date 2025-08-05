@@ -48,6 +48,8 @@ class UserUpdateRepository implements UserUpdateRepositoryInterface
             ->values()
             ->all();
         if (!empty($recipientIds)) {
+//            Log::info('id' . $user->id);
+//            Log::info($recipientIds);
             $this->cacheChatsRepository->invalidateRecipientsCache([$user->id]);
             $this->cacheChatsRepository->invalidateRecipientsCache($recipientIds);
         }

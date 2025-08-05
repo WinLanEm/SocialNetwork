@@ -255,7 +255,7 @@
     max-width: 80%;
     overflow-x: hidden;
 }
-.message-wrapper{
+.message-input-wrapper {
     height: 5%;
     position: relative;
     width: 100%;
@@ -301,7 +301,7 @@
     text-align: center;
     align-items: center;
 }
-.inactive-message-wrapper{
+.inactive-message-input{
     display: none;
 }
 .inactive-chat-partner-wrapper{

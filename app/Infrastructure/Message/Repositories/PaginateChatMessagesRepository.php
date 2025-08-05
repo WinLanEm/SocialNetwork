@@ -14,7 +14,7 @@ class PaginateChatMessagesRepository implements PaginateChatMessagesRepositoryIn
     {
     }
 
-    private int $perPage = 50;
+    private int $perPage = 20;
     public function exec(string $chatId,string $secretKey, ?int $page):array
     {
         $messages = Message::where('chat_id', $chatId)
