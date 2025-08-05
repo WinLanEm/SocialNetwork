@@ -1,46 +1,12 @@
 <template>
     <Head :title="title"/>
     <div class="home-container">
-        <div class="profile" v-show="profileIsOpen">
-            <div class="sidebar-avatar-and-username">
-                <div class="avatar-container">
-                    <img v-if="userData.avatar_url" :src="userData.avatar_url" :alt="userData.username" class="user-avatar"/>
-                    <div v-else class="fake-user-profile-avatar">{{userData.username[0]}}</div>
-                    <label class="avatar-upload">
-                        <input type="file" name="avatar_url" class="update-avatar" accept="image/*" @change="avatarUpload">
-                        <span class="upload-icon">+</span>
-                        <span v-if="updateProfileErrors.avatar_url" class="error-message">
-                        {{ updateProfileErrors.avatar_url[0] }}
-                    </span>
-                    </label>
-                </div>
-                <h3 class="username">{{userData.username}}</h3>
-            </div>
-            <form class="update_profile_data" @submit.prevent="updateProfileData">
-                <div>
-                    <label for="username">username</label>
-                    <input :value="userData.username" name="username"/>
-                    <span v-if="updateProfileErrors.username" class="error-message">
-                        {{ updateProfileErrors.username[0] }}
-                    </span>
-                </div>
-                <div>
-                    <label for="phone">phone</label>
-                    <input name="phone" :value="userData.phone"/>
-                    <span v-if="updateProfileErrors.phone" class="error-message">
-                        {{ updateProfileErrors.phone[0] }}
-                    </span>
-                </div>
-                <div class="bio-div">
-                    <label for="bio">bio</label>
-                    <textarea class="bio" name="bio" :value="userData.bio"/>
-                    <span v-if="updateProfileErrors.bio" class="error-message">
-                        {{ updateProfileErrors.bio[0] }}
-                    </span>
-                </div>
-                <button type="submit">update</button>
-            </form>
-        </div>
+        <ProfileSidebar
+            :isOpen="profileIsOpen"
+            :initialUserData="userData"
+            @profile-updated="handleProfileUpdate"
+        />
+
         <div class="chats">
             <transition name="fade">
                 <div
@@ -49,141 +15,51 @@
                     @click="handleClick"
                 ></div>
             </transition>
-            <transition name="slide">
-                <aside
-                    v-show="sideBarIsOpen"
-                    class="sidebar"
-                    @click.stop
-                >
-                    <div class="sidebar-avatar-and-username">
-                        <img v-if="userData.avatar_url" :src="userData.avatar_url" :alt="userData.username" class="user-avatar"/>
-                        <div v-else class="fake-user-avatar">{{userData.username[0]}}</div>
-                        <h3 class="username">{{userData.username}}</h3>
-                        <h3 class="bio-text">{{userData.bio}}</h3>
-                    </div>
-                    <div class="sidebar-active">
-                        <button @click="profileIsOpen = true; sideBarIsOpen = false">My profile</button>
-                        <button>Settings</button>
-                    </div>
-                </aside>
-            </transition>
 
+            <MainSidebar
+                :isOpen="sideBarIsOpen"
+                :userData="userData"
+                @open-profile="openProfile"
+            />
 
-            <div class="other_and_search">
-                <div class="other-btn">
-                    <button class="profile-button" @click="sideBarIsOpen = !sideBarIsOpen">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </button>
-                </div>
-                <div class="search-wrapper">
-                    <input type="text"
-                           placeholder="Search"
-                           class="search-members"
-                           v-model="searchQuery"
-                           @focus="isInputFocused = true"
-                           @blur="isInputFocused = false"
-                    />
-                    <span
-                        class="clear-btn"
-                        v-if="searchQuery.length > 0"
-                        @click="searchQuery = ''"
-                    >×</span>
-                </div>
-            </div>
-            <div class="members" :class="{'members-active':isInputFocused}">
-                <div v-if="isInputFocused">
-                    <div class="users_not_found" v-if="users.length === 0">No users found</div>
-                    <ul class="members-searched">
-                        <li v-for="user in users" :key="user.id" @mousedown.prevent @click="showChat(user)">
-                            <img v-if="user.avatar_url" :src="user.avatar_url" :alt="user.username"/>
-                            <div class="fake-avatar" v-else>{{user.username[0]}}</div>
-                            <div class="name_and_last_seen">
-                                <h3>{{user.username}}</h3>
-                                <h6 v-if="user.last_seen">{{formatDataToUser(user.last_seen)}}</h6>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-                <div v-else class="current-user-chats-wrapper">
-                    <ul class="current-user-chats">
-                        <li v-for="chat in internalChats" :key="chat.id" class="current-user" @mousedown.prevent @click="showChat(chat.recipient.data)">
-                            <div class="user-data">
-                                <img class="fake-user-avatar" v-if="chat.recipient.data.avatar_url" :src="chat.recipient.data.avatar_url" :alt="chat.recipient.data.avatar_url"/>
-                                <div v-else class="fake-user-avatar">{{chat.recipient.data.username[0]}}</div>
-                                <div class="name_and_last_message">
-                                    <div class="username_and_circle">
-                                        <h3 class="username">{{ chat.recipient.data.username }}</h3>
-                                        <div
-                                            class="blue-circle blue-circle-in-channel"
-                                            :style="{ display: chat.chat_data.is_read || user_id === chat.recipient.data.id ? 'none' : 'block' }"
-                                        ></div>
-                                    </div>
-                                    <h3 class="last-message">{{chat.chat_data.last_message}}</h3>
-                                </div>
-                            </div>
-                            <div class="user-last-seen">
-                                {{formatDataToUser(chat.chat_data.updated_at)}}
-                            </div>
-                            <input type="hidden" class="chat-id" :value=chat.chat_data.chat_id>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+            <SearchBar
+                v-model="searchQuery"
+                @toggle-sidebar="toggleSidebar"
+                @input-focus="isInputFocused = $event"
+            />
+
+            <ChatList
+                :isInputFocused="isInputFocused"
+                :users="users"
+                :internalChats="internalChats"
+                :user_id="user_id"
+                :formatDataToUser="formatDataToUser"
+                @show-chat="showChat"
+            />
         </div>
+
         <div class="concrete-chat-wrapper">
             <input type="hidden" class="current_chat_id" v-model="currentChatId">
-            <div class="chat-partner-wrapper" :class="{'inactive-chat-partner-wrapper': !currentChatId}">
-                <div class="chat-partner-data" ref="partnerData">
-                    <div class="concrete_user_name_and_last_seen_wrapper">
-                        <h2>{{partnerInfo.username}}</h2>
-                        <h6 v-if="partnerInfo.lastSeen">{{formatDataToUser(partnerInfo.lastSeen)}}</h6>
-                        <h6 v-else>latest ago</h6>
-                    </div>
-                    <img class="fake-avatar concrete_fake_avatar" v-if="partnerInfo.avatar" :alt="partnerInfo.username" :src="partnerInfo.avatar"/>
-                    <div v-else class="fake-avatar concrete_fake_avatar">{{partnerInfo.username[0]}}</div>
-                </div>
-                <div class="chat-partner-buttons"></div>
-            </div>
-            <div class="messages-container" :class="{'inactive-message-container': !currentChatId}">
-                <h3 v-if="!currentChatId">Select a chat to start messaging</h3>
-                <ul class="messages">
-                    <li v-if="isLoadingOlderMessages" class="loading-indicator">
-                        Loading older messages...
-                    </li>
-                    <li v-for="message in messages" :key="message.id" :data-message-id="message.id" :class="message.sender_id === user_id ? 'sender-message-container' : 'receiver-message-container'" :id="message.is_read ? 'readed' : 'unreaded'">
-                        <div class="message-content-wrapper">
-                            <p class="message-content">{{message.content}}</p>
-                            <div class="other-message-info-wrapper">
-                                <p class='message-data'>{{formatDataToUser(message.updated_at)}}</p>
-                                <div v-if="!message.is_read && message.sender_id === user_id" class="blue-circle"></div>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            <div class="message-wrapper" :class="{'inactive-message-wrapper': !currentChatId}">
-                <input class="message-write-input"
-                       type="text"
-                       name="message"
-                       placeholder="Write a message..."
-                       v-model="messageContent"
-                       @keyup.enter="sendMessage"
-                       :disabled="!currentChatId"
-                />
-                <span
-                    class="message-input-btn"
-                    v-if="messageContent.length > 0 && currentChatId"
-                    @click="sendMessage"
-                >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M21 4L3 11L9 13L15 21L17 15L21 4Z" fill="#2A5885" stroke="#2A5885" stroke-width="1.5" stroke-linejoin="round"/>
-                        <path d="M3 11L21 4L9 13" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
-                        <path d="M15 21L17 15L9 13" stroke="#2A5885" stroke-width="1.5" stroke-linejoin="round"/>
-                    </svg>
-                </span>
-            </div>
+
+            <ChatHeader
+                :currentChatId="currentChatId"
+                :partnerInfo="partnerInfo"
+                :formatDataToUser="formatDataToUser"
+            />
+
+            <ChatMessages
+                :currentChatId="currentChatId"
+                :messages="messages"
+                :user_id="user_id"
+                :isLoadingOlderMessages="isLoadingOlderMessages"
+                :formatDataToUser="formatDataToUser"
+            />
+
+            <MessageInput
+                v-model="messageContent"
+                :currentChatId="currentChatId"
+                @send-message="sendMessage"
+            />
         </div>
     </div>
 </template>
@@ -192,10 +68,24 @@
 import {Head} from "@inertiajs/vue3";
 import {ref, watch, onMounted, onUnmounted, nextTick} from "vue";
 import { debounce } from 'lodash-es';
+import ProfileSidebar from './Components/ProfileSidebar.vue';
+import MainSidebar from './Components/MainSidebar.vue';
+import ChatList from './Components/ChatList.vue';
+import ChatHeader from './Components/ChatHeader.vue';
+import ChatMessages from './Components/ChatMessages.vue';
+import MessageInput from './Components/MessageInput.vue';
+import SearchBar from './Components/SearchBar.vue';
 
 export default {
     components: {
-        Head
+        Head,
+        ProfileSidebar,
+        MainSidebar,
+        ChatList,
+        ChatHeader,
+        ChatMessages,
+        MessageInput,
+        SearchBar
     },
     props: {
         title: String,
@@ -230,7 +120,6 @@ export default {
         document.removeEventListener('click', this.handleClickOutside);
     },
     setup(props) {
-        const updateProfileErrors = ref({})
         const profileIsOpen = ref(false)
         const sideBarIsOpen = ref(false)
         const currentChatLastMessage = ref('');
@@ -769,69 +658,6 @@ export default {
                 })
             })
         }
-        const updateProfileData = async (e) => {
-            updateProfileErrors.value = {}
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const formDataObj = Object.fromEntries(formData);
-            const response = await fetch(route('update-profile'), {
-                method: 'PATCH',
-                body: JSON.stringify(formDataObj),
-                headers: getHeaders()
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                if (errorData.errors) {
-                    updateProfileErrors.value = errorData.errors;
-                } else {
-                    throw new Error(errorData.message || 'Update failed');
-                }
-                return;
-            }
-
-            const result = await response.json();
-            userData.value = { ...userData.value, ...result };
-        }
-        const avatarUpload = async (event) => {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            updateProfileErrors.value = {};
-            event.preventDefault();
-
-
-            const formData = new FormData();
-            formData.append('avatar_url', file);
-
-            try {
-                const response = await fetch(route('update-avatar'), {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken.value,
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json',
-                    },
-                    credentials: 'include'
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    if (errorData.errors) {
-                        updateProfileErrors.value = errorData.errors;
-                    } else {
-                        throw new Error(errorData.message || 'Update failed');
-                    }
-                    return;
-                }
-
-                const result = await response.json();
-                userData.value = { ...userData.value, ...result };
-            } catch (error) {
-                console.error('Ошибка при загрузке аватара:', error);
-            }
-        };
         const updateLastSeen = debounce(async () => {
             try {
                 await fetch(route('update-last-seen'), {
@@ -859,10 +685,16 @@ export default {
             // Формат для БД: YYYY-MM-DD HH:MM:SS
             return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
         }
+        const handleProfileUpdate = (updatedData) => {
+            userData.value = {...userData.value, ...updatedData}
+        }
+        const openProfile = () => {
+            sideBarIsOpen.value = false;
+            profileIsOpen.value = true;
+        };
         return {
-            avatarUpload,
-            updateProfileErrors,
-            updateProfileData,
+            openProfile,
+            handleProfileUpdate,
             userData,
             sendMessage,
             searchQuery,
