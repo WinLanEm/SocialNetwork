@@ -8,6 +8,7 @@ use App\Domain\Chat\Repositories\CacheChatsRepositoryInterface;
 use App\Domain\Chat\Repositories\ChatIsReadRepositoryInterface;
 use App\Domain\User\Entities\User;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 class AddRecipientToChatsRepository implements AddRecipientToChatsRepositoryInterface
 {
