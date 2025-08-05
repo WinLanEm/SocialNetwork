@@ -23,9 +23,10 @@
             />
 
             <SearchBar
-                v-model="searchQuery"
                 @toggle-sidebar="toggleSidebar"
                 @input-focus="isInputFocused = $event"
+                @results="users = $event"
+                @loading="loading = $event"
             />
 
             <ChatList
@@ -125,13 +126,11 @@ export default {
         const currentChatLastMessage = ref('');
         const currentChatId = ref(null);
         const messageContent = ref('');
-        const searchQuery = ref('');
         const users = ref([]);
         const loading = ref(false);
         const isInputFocused = ref(false);
         const isChatLoading = ref(false);
         const partnerData = ref(null);
-        let debounceTimeout = null;
         const visibleMessageIds = ref(new Set());
         const observer = ref(null);
         const csrfToken = ref('');
@@ -515,32 +514,6 @@ export default {
             };
         }
 
-        watch(searchQuery, (newVal) => {
-            clearTimeout(debounceTimeout);
-
-            if (newVal.trim().length === 0) {
-                users.value = [];
-                return;
-            }
-
-            debounceTimeout = setTimeout(() => {
-                loading.value = true;
-                fetch(route('search-users', {username: newVal}), {
-                    headers: getHeaders()
-                })
-                    .then(res => res.json())
-                    .then(data => {
-                        users.value = data;
-                    })
-                    .catch(() => {
-                        users.value = [];
-                    })
-                    .finally(() => {
-                        loading.value = false;
-                    });
-            }, 300);
-        });
-
         async function sendMessage() {
             if (messageContent.value === '' || !currentChatId.value) return;
             const chatId = currentChatId.value
@@ -697,7 +670,6 @@ export default {
             handleProfileUpdate,
             userData,
             sendMessage,
-            searchQuery,
             users,
             loading,
             isInputFocused,
