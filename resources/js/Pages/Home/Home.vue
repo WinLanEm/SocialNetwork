@@ -92,7 +92,6 @@ export default {
         user_data: Array,
     },
     setup(props) {
-        console.log(props.chats)
         // --- СОСТОЯНИЕ UI ---
         const profileIsOpen = ref(false);
         const sideBarIsOpen = ref(false);

@@ -48,13 +48,14 @@ export default {
 
             loading.value = true;
             emit('loading', true);
-
             fetch(route('search-users', { username: newVal }), {
                 headers: {
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': csrfToken.value,
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Authorization': `Bearer ${localStorage.getItem('sanctum_token')}`,
+                },
+                credentials:"include"
             })
                 .then(res => res.json())
                 .then(data => {
