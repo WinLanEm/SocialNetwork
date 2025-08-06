@@ -7,6 +7,7 @@ use App\Application\Message\Jobs\StoreMessageJob;
 use App\Common\Controllers\Controller;
 use App\Domain\Chat\Repositories\GetChatByIdRepositoryInterface;
 use App\Presentation\Message\Requests\StoreMessageRequest;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 
 class StoreMessageController extends Controller
@@ -22,12 +23,7 @@ class StoreMessageController extends Controller
         $dto = StoreMessageDTO::fromRequest($request->validated());
         $userId = auth()->id();
         $chat = $this->getChatByIdRepository->exec($dto->chatId);
-        if(!in_array($userId,$chat->participants)){
-            return response()->json([
-                'status' => false,
-                'message' => 'You do not have permission to see this message'
-            ],403);
-        }
+        Gate::authorize('view-chat', $chat);
         StoreMessageJob::dispatch($dto, $userId);
         return response()->noContent(201);
     }

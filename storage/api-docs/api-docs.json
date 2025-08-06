@@ -1,0 +1,958 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "My API",
+        "description": "Документация к API",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/chats/messages": {
+            "get": {
+                "tags": [
+                    "Chats"
+                ],
+                "summary": "Получить сообщения из чата с пагинацией",
+                "operationId": "getChatMessages",
+                "parameters": [
+                    {
+                        "name": "chat_id",
+                        "in": "query",
+                        "description": "ID чата для получения сообщений",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "chat-123abc"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Номер страницы для пагинации сообщений",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Список сообщений из чата с пагинацией",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "messages": {
+                                            "description": "Пагинированный объект сообщений или null, если сообщений нет",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "required": [
+                                                            "id",
+                                                            "content",
+                                                            "sender_id",
+                                                            "updated_at",
+                                                            "is_read"
+                                                        ],
+                                                        "properties": {
+                                                            "id": {
+                                                                "description": "ID сообщения",
+                                                                "type": "integer",
+                                                                "example": 456
+                                                            },
+                                                            "content": {
+                                                                "description": "Текст сообщения (расшифрованный)",
+                                                                "type": "string",
+                                                                "example": "Привет, как дела?"
+                                                            },
+                                                            "sender_id": {
+                                                                "description": "ID отправителя сообщения",
+                                                                "type": "integer",
+                                                                "example": 42
+                                                            },
+                                                            "updated_at": {
+                                                                "description": "Время последнего обновления сообщения",
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "example": "2025-08-06T12:00:00Z"
+                                                            },
+                                                            "is_read": {
+                                                                "description": "Прочитано ли сообщение",
+                                                                "type": "boolean",
+                                                                "example": true
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "first_page_url": {
+                                                    "type": "string",
+                                                    "format": "url",
+                                                    "example": "https://api.site.ru/api/chats/messages?chat_id=chat-123abc&page=1"
+                                                },
+                                                "from": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "last_page_url": {
+                                                    "type": "string",
+                                                    "format": "url",
+                                                    "example": "https://api.site.ru/api/chats/messages?chat_id=chat-123abc&page=5"
+                                                },
+                                                "next_page_url": {
+                                                    "type": "string",
+                                                    "format": "url",
+                                                    "example": "https://api.site.ru/api/chats/messages?chat_id=chat-123abc&page=2",
+                                                    "nullable": true
+                                                },
+                                                "path": {
+                                                    "type": "string",
+                                                    "format": "url",
+                                                    "example": "https://api.site.ru/api/chats/messages"
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 20
+                                                },
+                                                "prev_page_url": {
+                                                    "type": "string",
+                                                    "format": "url",
+                                                    "example": null,
+                                                    "nullable": true
+                                                },
+                                                "to": {
+                                                    "type": "integer",
+                                                    "example": 20
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 100
+                                                }
+                                            },
+                                            "type": "object",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Доступ запрещён - пользователь не участник чата",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You do not have permission to see this chat"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации параметров запроса",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "chat_id": [
+                                                    "Поле chat_id обязательно."
+                                                ],
+                                                "page": [
+                                                    "Поле page обязательно и должно быть целым числом."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизован - требуется Sanctum cookie-based авторизация"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/chats": {
+            "post": {
+                "tags": [
+                    "Chats"
+                ],
+                "summary": "Получить существующий или создать новый чат",
+                "operationId": "getOrCreateChat",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "participants",
+                                    "type"
+                                ],
+                                "properties": {
+                                    "participants": {
+                                        "description": "Массив ID пользователей, которые будут участниками чата. Должен содержать как минимум одного пользователя.",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "example": 42
+                                        },
+                                        "minItems": 1
+                                    },
+                                    "type": {
+                                        "description": "Тип чата (например, 'private', 'group')",
+                                        "type": "string",
+                                        "example": "private"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Информация о существующем либо новом чате",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "chat_id",
+                                        "last_seen",
+                                        "last_message",
+                                        "messages"
+                                    ],
+                                    "properties": {
+                                        "chat_id": {
+                                            "description": "Уникальный идентификатор чата",
+                                            "type": "string",
+                                            "example": "123"
+                                        },
+                                        "last_seen": {
+                                            "description": "Время последнего посещения пользователя (если применимо)",
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2025-08-06T12:00:00Z",
+                                            "nullable": true
+                                        },
+                                        "last_message": {
+                                            "description": "Текст последнего сообщения в чате",
+                                            "type": "string",
+                                            "example": "Привет всем!",
+                                            "nullable": true
+                                        },
+                                        "messages": {
+                                            "description": "Массив сообщений, получаемых при существующем чате (если чат новый, пустой массив)",
+                                            "type": "array",
+                                            "items": {
+                                                "required": [
+                                                    "id",
+                                                    "content",
+                                                    "sender_id",
+                                                    "updated_at",
+                                                    "is_read"
+                                                ],
+                                                "properties": {
+                                                    "id": {
+                                                        "description": "ID сообщения",
+                                                        "type": "integer",
+                                                        "example": 456
+                                                    },
+                                                    "content": {
+                                                        "description": "Текст сообщения",
+                                                        "type": "string",
+                                                        "example": "Привет, как дела?"
+                                                    },
+                                                    "sender_id": {
+                                                        "description": "ID отправителя сообщения",
+                                                        "type": "integer",
+                                                        "example": 42
+                                                    },
+                                                    "updated_at": {
+                                                        "description": "Время отправки или обновления сообщения",
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2025-08-06T12:00:00Z"
+                                                    },
+                                                    "is_read": {
+                                                        "description": "Флаг, прочитано ли сообщение",
+                                                        "type": "boolean",
+                                                        "example": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Доступ запрещён. Пользователь не является участником указанного чата",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You do not have permission to see this chat"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации запроса",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "Ошибки валидации по полям",
+                                            "type": "object",
+                                            "example": {
+                                                "participants": [
+                                                    "You can not send empty participants"
+                                                ],
+                                                "type": [
+                                                    "Type is required field"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизован - требуется авторизация через Sanctum cookie"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/chats/{chat}": {
+            "delete": {
+                "tags": [
+                    "Chats"
+                ],
+                "summary": "Удалить чат",
+                "operationId": "destroyChat",
+                "parameters": [
+                    {
+                        "name": "chat",
+                        "in": "path",
+                        "description": "ID чата для удаления",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "123"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Чат успешно удалён, тело ответа отсутствует"
+                    },
+                    "403": {
+                        "description": "Доступ запрещён. Пользователь не является участником данного чата или у него нет прав на удаление",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You do not have permission to delete this chat"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизован - требуется авторизация через Sanctum cookie"
+                    },
+                    "404": {
+                        "description": "Чат с указанным ID не найден",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Chat not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/messages": {
+            "post": {
+                "tags": [
+                    "Messages"
+                ],
+                "summary": "Отправить сообщение в чат",
+                "operationId": "sendMessage",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "content",
+                                    "chat_id",
+                                    "temp_id"
+                                ],
+                                "properties": {
+                                    "content": {
+                                        "description": "Текст сообщения",
+                                        "type": "string",
+                                        "maxLength": 65535,
+                                        "minLength": 1,
+                                        "example": "Привет, как дела?"
+                                    },
+                                    "chat_id": {
+                                        "description": "ID чата, куда отправляется сообщение",
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "example": "chat-123abc"
+                                    },
+                                    "temp_id": {
+                                        "description": "Временный ID сообщения на клиенте для отслеживания статуса",
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "example": "temp-456def"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Сообщение успешно создано, без содержимого в ответе"
+                    },
+                    "403": {
+                        "description": "Доступ запрещён. Пользователь не является участником чата",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You do not have permission to see this message"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации запроса",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "Ошибки валидации по полям",
+                                            "type": "object",
+                                            "example": {
+                                                "content": [
+                                                    "Сообщение не может быть пустым"
+                                                ],
+                                                "chat_id": [
+                                                    "ID чата обязателен"
+                                                ],
+                                                "temp_id": [
+                                                    "Временный ID обязателен"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизован - требуется авторизация через Sanctum cookie"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/messages/mark_messages_is_read": {
+            "post": {
+                "tags": [
+                    "Messages"
+                ],
+                "summary": "Отметить сообщения как прочитанные",
+                "operationId": "markMessagesAsRead",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "message_ids",
+                                    "user_id",
+                                    "chat_id"
+                                ],
+                                "properties": {
+                                    "message_ids": {
+                                        "description": "Массив ID сообщений для отметки как прочитанных",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "example": 123
+                                        },
+                                        "minItems": 1
+                                    },
+                                    "user_id": {
+                                        "description": "ID пользователя, отметившего сообщения",
+                                        "type": "integer",
+                                        "minimum": 1,
+                                        "example": 42
+                                    },
+                                    "chat_id": {
+                                        "description": "ID чата, содержащего сообщения",
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "example": "chat-123abc"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Успешно - тело ответа пустое"
+                    },
+                    "422": {
+                        "description": "Ошибка валидации запроса",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "description": "Ошибки валидации по полям",
+                                            "type": "object",
+                                            "example": {
+                                                "message_ids": [
+                                                    "Массив ID сообщений обязателен и не должен быть пустым"
+                                                ],
+                                                "user_id": [
+                                                    "ID пользователя обязателен"
+                                                ],
+                                                "chat_id": [
+                                                    "ID чата обязателен"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизован - требуется авторизация через Sanctum cookie"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/search/users": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Поиск пользователей по username",
+                "operationId": "searchUsers",
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "query",
+                        "description": "Текст для поиска пользователей по username",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Массив пользователей, соответствующих условию поиска",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "description": "Результат поиска пользователя",
+                                        "required": [
+                                            "id",
+                                            "username",
+                                            "avatar_url",
+                                            "last_seen"
+                                        ],
+                                        "properties": {
+                                            "id": {
+                                                "description": "ID пользователя",
+                                                "type": "integer",
+                                                "example": 123
+                                            },
+                                            "username": {
+                                                "description": "Уникальное имя пользователя",
+                                                "type": "string",
+                                                "example": "ivan_ivanov"
+                                            },
+                                            "avatar_url": {
+                                                "description": "URL аватара",
+                                                "type": "string",
+                                                "format": "url",
+                                                "example": "https://site.ru/storage/avatars/1.png"
+                                            },
+                                            "last_seen": {
+                                                "description": "Время последнего посещения пользователя в формате ISO 8601",
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2024-08-05T12:34:56Z"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизован - требуется авторизация через Sanctum cookie"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/update/profile": {
+            "patch": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Обновить профиль пользователя",
+                "operationId": "updateProfile",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "username": {
+                                        "description": "Новый username, макс 511 символов, уникален среди всех пользователей",
+                                        "type": "string",
+                                        "maxLength": 511,
+                                        "example": "cool_hacker"
+                                    },
+                                    "phone": {
+                                        "description": "Номер телефона в формате +7XXXXXXXXXX или 8XXXXXXXXXX, уникальный",
+                                        "type": "string",
+                                        "pattern": "^(\\+7|8)[0-9]{10}$",
+                                        "example": "+79998887766"
+                                    },
+                                    "bio": {
+                                        "description": "О себе",
+                                        "type": "string",
+                                        "example": "Люблю Laravel и шашлыки"
+                                    },
+                                    "password": {
+                                        "description": "Новый пароль, минимум 8 символов, минимум одна заглавная буква",
+                                        "type": "string",
+                                        "minLength": 8,
+                                        "example": "SecretABC1"
+                                    },
+                                    "password_confirmation": {
+                                        "description": "Подтверждение пароля, должно совпадать с password",
+                                        "type": "string",
+                                        "example": "SecretABC1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Профиль успешно обновлен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "username",
+                                        "bio",
+                                        "avatar_url",
+                                        "phone"
+                                    ],
+                                    "properties": {
+                                        "username": {
+                                            "type": "string",
+                                            "example": "cool_hacker"
+                                        },
+                                        "bio": {
+                                            "type": "string",
+                                            "example": "Люблю Laravel и шашлыки"
+                                        },
+                                        "avatar_url": {
+                                            "type": "string",
+                                            "format": "url",
+                                            "example": "https://site.ru/storage/avatars/avatar.png"
+                                        },
+                                        "phone": {
+                                            "type": "string",
+                                            "example": "+79998887766"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Валидационная ошибка (ошибки в данных запроса)"
+                    },
+                    "401": {
+                        "description": "Неавторизован - требуется авторизация через Sanctum cookie"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/update/avatar": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Обновить аватар пользователя",
+                "operationId": "updateAvatar",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "avatar_url"
+                                ],
+                                "properties": {
+                                    "avatar_url": {
+                                        "description": "Изображение аватара (jpeg, png, jpg, gif, webp, svg), макс 2МБ",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Аватар успешно обновлен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "username",
+                                        "bio",
+                                        "avatar_url",
+                                        "phone"
+                                    ],
+                                    "properties": {
+                                        "username": {
+                                            "type": "string",
+                                            "example": "cool_hacker"
+                                        },
+                                        "bio": {
+                                            "type": "string",
+                                            "example": "Люблю Laravel и шашлыки"
+                                        },
+                                        "avatar_url": {
+                                            "type": "string",
+                                            "format": "url",
+                                            "example": "https://site.ru/storage/avatars/avatar.png"
+                                        },
+                                        "phone": {
+                                            "type": "string",
+                                            "example": "+79998887766"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Валидация не прошла (файл не изображение/превышен размер)"
+                    },
+                    "401": {
+                        "description": "Неавторизован - требуется авторизация через Sanctum cookie"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/update/last_seen": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Обновить время последнего посещения пользователя",
+                "operationId": "updateLastSeen",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "last_seen"
+                                ],
+                                "properties": {
+                                    "last_seen": {
+                                        "description": "Время последней активности пользователя в ISO8601 (UTC)",
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2025-08-06T09:00:00Z"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Время успешно обновлено, тело ответа пустое"
+                    },
+                    "401": {
+                        "description": "Неавторизован - требуется авторизация через Sanctum cookie"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "apiKey",
+                "description": "Sanctum cookie-based auth. Требуется авторизация через web, после чего браузер отправляет куки: laravel_session (сессия) и XSRF-TOKEN (csrf).",
+                "name": "XSRF-TOKEN",
+                "in": "cookie"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Chats",
+            "description": "Chats"
+        },
+        {
+            "name": "Messages",
+            "description": "Messages"
+        },
+        {
+            "name": "Users",
+            "description": "Users"
+        },
+        {
+            "name": "Profile",
+            "description": "Profile"
+        }
+    ]
+}

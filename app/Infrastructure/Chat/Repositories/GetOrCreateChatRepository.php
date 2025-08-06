@@ -9,6 +9,8 @@ use App\Domain\Chat\Repositories\CacheChatsRepositoryInterface;
 use App\Domain\Chat\Repositories\GetOrCreateChatRepositoryInterface;
 use App\Domain\Message\Repositories\PaginateChatMessagesRepositoryInterface;
 use App\Domain\User\Repositories\GetUserByIdRepositoryInterface;
+use App\Exceptions\JsonAuthorizationException;
+use Illuminate\Support\Facades\Gate;
 
 
 class GetOrCreateChatRepository implements GetOrCreateChatRepositoryInterface
@@ -42,9 +44,7 @@ class GetOrCreateChatRepository implements GetOrCreateChatRepositoryInterface
             ];
         }
         else{
-            if(!in_array(auth()->id(),$chat->participants)){
-                return [];
-            }
+            Gate::authorize('view-chat', $chat);
             return [
                 'last_seen' => $chatUser->last_seen,
                 'chat_id' => $chat->id,

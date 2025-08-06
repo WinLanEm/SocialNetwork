@@ -4,6 +4,8 @@ namespace App\Infrastructure\Chat\Repositories;
 
 use App\Domain\Chat\Entities\Chat;
 use App\Domain\Chat\Repositories\DestroyChatRepositoryInterface;
+use App\Exceptions\JsonAuthorizationException;
+use Illuminate\Support\Facades\Gate;
 
 class DestroyChatRepository implements DestroyChatRepositoryInterface
 {
@@ -13,10 +15,7 @@ class DestroyChatRepository implements DestroyChatRepositoryInterface
         if(!$chat){
             return 0;
         }
-
-        if (!in_array(auth()->id(), $chat->participants)) {
-            return 0;
-        }
+        Gate::authorize('view-chat', $chat);
 
         return Chat::destroy($id);
     }

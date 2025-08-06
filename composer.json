@@ -9,6 +9,7 @@
         "php": "^8.2",
         "ext-openssl": "*",
         "babenkoivan/elastic-scout-driver": "^4.0",
+        "darkaonline/l5-swagger": "^9.0",
         "elasticsearch/elasticsearch": "^8.18",
         "inertiajs/inertia-laravel": "^2.0",
         "laravel/framework": "^12.0",

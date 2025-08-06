@@ -28,5 +28,6 @@ php artisan mongo:indexes
 php artisan db:seed
 
 # Start development services
+php artisan l5-swagger:generate
 npm run dev
 php artisan queue:work

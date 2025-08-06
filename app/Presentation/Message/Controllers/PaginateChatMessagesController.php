@@ -19,12 +19,7 @@ class PaginateChatMessagesController extends Controller
     public function __invoke(PaginateChatMessagesRequest $request)
     {
         $chat = $this->getChatByIdRepository->exec($request->chat_id);
-        if(!in_array(auth()->id(),$chat->participants)){
-            return response()->json([
-                'status' => false,
-                'message' => 'You do not have permission to see this chat'
-            ],403);
-        }
+        $this->authorize('view-chat', $chat);
         $messages = $this->paginateChatMessagesRepository->exec($request->chat_id,$chat->secret_key,$request->page);
         if(!empty($messages)){
             return response()->json(['messages'  =>$messages],200);
