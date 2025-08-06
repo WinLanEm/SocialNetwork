@@ -17,7 +17,6 @@ class DestroyChatController extends Controller
 
     public function __invoke(string $chatId)
     {
-        $this->authorize('view-chat', Chat::find($chatId));
         $deletedCount = $this->repository->exec($chatId);
 
         if ($deletedCount > 0) {

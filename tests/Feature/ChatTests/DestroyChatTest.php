@@ -40,9 +40,8 @@ class DestroyChatTest extends TestCase
     {
         DB::connection('mongodb')->getCollection('chats')->deleteMany([]);
         $this->artisan('mongo:indexes');
-        $chat = Chat::factory()->create();
-        $participantId = $chat->participants[0];
-        $user = User::find($participantId);
+        $user = User::factory()->create();
+        $chat = Chat::factory()->create(['participants' => [$user->id]]);
         $res = $this
             ->actingAs($user)
             ->withHeaders([
@@ -63,7 +62,7 @@ class DestroyChatTest extends TestCase
                 'Accept' => 'application/json',
             ])
             ->delete(route('destroy-chat', ['chat' => $chat->id]));
-        $res->assertStatus(404);
+        $res->assertStatus(403);
     }
 
     #[Test]
@@ -71,14 +70,16 @@ class DestroyChatTest extends TestCase
     {
         DB::connection('mongodb')->getCollection('chats')->deleteMany([]);
         $this->artisan('mongo:indexes');
-        $chat = Chat::factory()->create();
         $user = User::factory()->create();
+        $participant = User::factory()->create();
+        $chat = Chat::factory()->create(['participants' => [$participant->id]]);
+
         $res = $this
             ->actingAs($user)
             ->withHeaders([
                 'Accept' => 'application/json',
             ])
             ->delete(route('destroy-chat', ['chat' => $chat->id]));
-        $res->assertStatus(404);
+        $res->assertStatus(403);
     }
 }

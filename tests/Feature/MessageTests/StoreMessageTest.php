@@ -85,8 +85,8 @@ class StoreMessageTest extends TestCase
     #[Test]
     public function can_send_message_with_valid_data()
     {
-        $chat = Chat::factory()->create();
         $user = User::factory()->create();
+        $chat = Chat::factory()->create(['participants' => [$user->id]]);
 
         $response = $this->actingAs($user)
             ->postJson(route('send-message'), [
@@ -105,8 +105,9 @@ class StoreMessageTest extends TestCase
 
         DB::connection('mongodb')->table('messages')->truncate();
 
-        $chat = Chat::factory()->create();
         $user = User::factory()->create();
+        $chat = Chat::factory()->create(['participants' => [$user->id]]);
+
         $tempId = 'unique-temp-id-123';
         $response = $this->actingAs($user)
             ->postJson(route('send-message'), [
@@ -138,8 +139,9 @@ class StoreMessageTest extends TestCase
 
         DB::connection('mongodb')->table('messages')->truncate();
 
-        $chat = Chat::factory()->create();
         $user = User::factory()->create();
+        $chat = Chat::factory()->create(['participants' => [$user->id]]);
+
         $tempId = 'unique-temp-id-123';
         $response = $this->actingAs($user)
             ->postJson(route('send-message'), [

@@ -24,5 +24,5 @@ Route::middleware('is_not_authorized')->group(function(){
 });
 Route::middleware('is_authorized')->group(function(){
     Route::get('/',HomePageController::class)->name('home');
-   Route::get('/logout',LogoutController::class)->name('logout');
+   Route::post('/logout',LogoutController::class)->name('logout');
 });

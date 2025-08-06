@@ -2,14 +2,12 @@
 
 ## Initial Setup (Host Machine)
 ```bash
-# Create required directories and set permissions
-mkdir -p tmp/db tmp/redis tmp/minio tmp/mongo tmp/elasticsearch
-chmod -R 775 storage tmp
 
 # Build Docker containers
 docker-compose build
 
 # Enter the application container
+docker-compose up -d
 docker exec -it project_app bash
 
 # Environment setup

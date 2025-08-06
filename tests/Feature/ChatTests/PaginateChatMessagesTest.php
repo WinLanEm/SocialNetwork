@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
+use App\Domain\User\Entities\User;
 
 class PaginateChatMessagesTest extends TestCase
 {
@@ -23,8 +24,10 @@ class PaginateChatMessagesTest extends TestCase
     #[Test]
     public function test_paginate_returns_200_and_empty_array_if_no_messages()
     {
-        $chat = Chat::factory()->create();
-        $res = $this->get(route('get-chat-messages',[
+        $user = User::factory()->create();
+        $chat = Chat::factory()->create(['participants' => [$user->id]]);
+        $res = $this->actingAs($user)
+            ->get(route('get-chat-messages',[
             'chat_id' => $chat->id,
             'page' => 1
             ])
@@ -36,14 +39,16 @@ class PaginateChatMessagesTest extends TestCase
     #[Test]
     public function test_paginate_returns_messages_if_exist_in_chat()
     {
-        $chat = Chat::factory()->create();
+        $user = User::factory()->create();
+        $chat = Chat::factory()->create(['participants' => [$user->id]]);
         $messages = Message::factory()
             ->count(3)
             ->forChat($chat->id)
             ->fromSender($chat->participants[0])
             ->withSecretKey($chat->secret_key)
             ->create();
-        $res = $this->get(route('get-chat-messages', [
+        $res = $this->actingAs($user)
+            ->get(route('get-chat-messages', [
             'chat_id' => $chat->id,
             'page' => 1,
         ]));
@@ -54,14 +59,16 @@ class PaginateChatMessagesTest extends TestCase
     #[Test]
     public function test_paginate_returns_correct_structure()
     {
-        $chat = Chat::factory()->create();
+        $user = User::factory()->create();
+        $chat = Chat::factory()->create(['participants' => [$user->id]]);
         $messages = Message::factory()
             ->count(3)
             ->forChat($chat->id)
             ->fromSender($chat->participants[0])
             ->withSecretKey($chat->secret_key)
             ->create();
-        $res = $this->get(route('get-chat-messages', [
+        $res = $this->actingAs($user)
+            ->get(route('get-chat-messages', [
             'chat_id' => $chat->id,
             'page' => 1,
         ]));
@@ -88,14 +95,16 @@ class PaginateChatMessagesTest extends TestCase
     #[Test]
     public function test_paginate_return_sort_by_updated_at_desc()
     {
-        $chat = Chat::factory()->create();
+        $user = User::factory()->create();
+        $chat = Chat::factory()->create(['participants' => [$user->id]]);
         $messages = Message::factory()
             ->count(3)
             ->forChat($chat->id)
             ->fromSender($chat->participants[0])
             ->withSecretKey($chat->secret_key)
             ->create();
-        $res = $this->get(route('get-chat-messages', [
+        $res = $this->actingAs($user)
+            ->get(route('get-chat-messages', [
             'chat_id' => $chat->id,
             'page' => 1,
         ]));

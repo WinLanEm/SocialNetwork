@@ -28,7 +28,7 @@ class SearchUsersTest extends TestCase
         sleep(2);
 
         $response = $this->actingAs($authUser)
-            ->get('/search/users?username=testuser');
+            ->get('api/search/users?username=testuser');
 
         $response->assertOk();
         $response->assertJsonFragment([
@@ -46,7 +46,7 @@ class SearchUsersTest extends TestCase
         sleep(2);
 
         $response = $this->actingAs($authUser)
-            ->get('/search/users?username=testuser');
+            ->get('api/search/users?username=testuser');
 
         $response->assertOk();
         $response->assertJson([]);
@@ -62,7 +62,7 @@ class SearchUsersTest extends TestCase
         User::makeAllSearchable();
         sleep(2);
         $response = $this->actingAs($authUser)
-            ->get('/search/users?username=tes');
+            ->get('api/search/users?username=tes');
 
         $response->assertOk();
 
@@ -81,7 +81,7 @@ class SearchUsersTest extends TestCase
         User::makeAllSearchable();
         sleep(2);
         $response = $this->actingAs($authUser)
-            ->get('/search/users?username=tes');
+            ->get('api/search/users?username=tes');
 
         $response->assertOk();
 
