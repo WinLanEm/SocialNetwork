@@ -44,9 +44,9 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts
 COPY . .
 
 # Настройка прав
-RUN mkdir -p storage/app/public \
+RUN mkdir -p storage/app/public tmp/{db,redis,minio,mongo,elasticsearch} \
     && chown -R 1000:1000 /var/www \
-    && chmod -R 775 storage \
+    && chmod -R 775 storage tmp \
     && npm config set cache /home/node/.npm --global
 
 # Установка пользователя и установка npm-зависимостей
